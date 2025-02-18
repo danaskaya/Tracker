@@ -28,13 +28,13 @@ final class IrregularEmojiCollectionCell: UICollectionViewCell {
         cellView.addSubview(label)
         NSLayoutConstraint.activate([
             cellView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-                        cellView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-                        label.centerXAnchor.constraint(equalTo: cellView.centerXAnchor),
-                        label.centerYAnchor.constraint(equalTo: cellView.centerYAnchor),
-                        cellView.heightAnchor.constraint(equalTo: contentView.heightAnchor),
-                        cellView.widthAnchor.constraint(equalTo: contentView.widthAnchor),
-                        label.widthAnchor.constraint(equalToConstant: 45),
-                        label.heightAnchor.constraint(equalToConstant: 45)
+            cellView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            label.centerXAnchor.constraint(equalTo: cellView.centerXAnchor),
+            label.centerYAnchor.constraint(equalTo: cellView.centerYAnchor),
+            cellView.heightAnchor.constraint(equalTo: contentView.heightAnchor),
+            cellView.widthAnchor.constraint(equalTo: contentView.widthAnchor),
+            label.widthAnchor.constraint(equalToConstant: 45),
+            label.heightAnchor.constraint(equalToConstant: 45)
         ])
     }
     required init?(coder: NSCoder) {

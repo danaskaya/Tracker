@@ -27,16 +27,16 @@ final class HabitCollectionEmojiCell: UICollectionViewCell {
         contentView.addSubview(cellView)
         cellView.addSubview(label)
         NSLayoutConstraint.activate([
-                    cellView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-                    cellView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-                    label.centerXAnchor.constraint(equalTo: cellView.centerXAnchor),
-                    label.centerYAnchor.constraint(equalTo: cellView.centerYAnchor),
-                    cellView.heightAnchor.constraint(equalTo: contentView.heightAnchor),
-                    cellView.widthAnchor.constraint(equalTo: contentView.widthAnchor),
-                    label.widthAnchor.constraint(equalToConstant: 45),
-                    label.heightAnchor.constraint(equalToConstant: 45)
-
-                ])
+            cellView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            cellView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            label.centerXAnchor.constraint(equalTo: cellView.centerXAnchor),
+            label.centerYAnchor.constraint(equalTo: cellView.centerYAnchor),
+            cellView.heightAnchor.constraint(equalTo: contentView.heightAnchor),
+            cellView.widthAnchor.constraint(equalTo: contentView.widthAnchor),
+            label.widthAnchor.constraint(equalToConstant: 45),
+            label.heightAnchor.constraint(equalToConstant: 45)
+            
+        ])
     }
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")

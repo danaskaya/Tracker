@@ -18,8 +18,8 @@ final class IrregularEmojiCollectionHeaderCell: UICollectionReusableView {
         super.init(frame: frame)
         addSubview(title)
         NSLayoutConstraint.activate([title.topAnchor.constraint(equalTo: topAnchor),
-                                             title.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 18)
-                                            ])
+                                     title.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 18)
+                                    ])
     }
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")

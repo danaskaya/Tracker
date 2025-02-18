@@ -17,7 +17,7 @@ class TabBarController: UITabBarController {
         vc.tabBarItem.title = "Трекеры"
         vc.tabBarItem.image = UIImage(named: "trackerImage")
         let statisticVC = setupVC(vc: StatisticViewController(), title: "Статистика", image: UIImage(named: "statisticImage"))
-        viewControllers = [vc,statisticVC]
+        viewControllers = [vc, statisticVC]
     }
     private func setupVC(vc: UIViewController, title: String, image: UIImage?) -> UIViewController {
         vc.tabBarItem.title = title

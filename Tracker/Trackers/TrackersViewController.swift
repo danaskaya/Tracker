@@ -12,8 +12,6 @@ final class TrackersViewController: UIViewController {
         dateformatter.dateFormat = "dd.MM.yy"
         return dateformatter
     }()
-    
-    static let shared = TrackersViewController()
     private lazy var collectionView: UICollectionView = {
         let collection = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewLayout())
         collection.translatesAutoresizingMaskIntoConstraints = false
@@ -43,8 +41,8 @@ final class TrackersViewController: UIViewController {
     }()
     private lazy var datePicker: UIDatePicker = {
         let datePicker = UIDatePicker()
-        datePicker.datePickerMode = .date
         datePicker.preferredDatePickerStyle = .compact
+        datePicker.datePickerMode = .date
         datePicker.tintColor = .ypBlue
         datePicker.locale = Locale(identifier: "ru_RU")
         datePicker.calendar.firstWeekday = 2
@@ -60,6 +58,7 @@ final class TrackersViewController: UIViewController {
         return textField
     }()
     private var categories: [TrackerCategory] = []
+    
     private var visibleCategories: [TrackerCategory] = []
     
     private var completedTrackers: [TrackerRecord] = []
@@ -68,14 +67,27 @@ final class TrackersViewController: UIViewController {
     var formattedDate: Date?
     override func viewDidLoad() {
         super.viewDidLoad()
+        TrackerCategoryStore.shared.delegate = self
         setupViews()
         setupConstraints()
         setupNavBar()
         datePicker.date = currentDate
-        reloadVisibleCategories()
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(hideKeyboard))
-        view.addGestureRecognizer(tapGesture)
+        fetchTrackers()
+        fetchRecords()
+        createGesture()
         setupEmptyViews()
+    }
+    private func fetchTrackers() {
+        let coreDataCats = TrackerCategoryStore.shared.fetchCoreDataCategory()
+        let objects = TrackerCategoryStore.shared.convertToCategory(coreDataCats)
+        categories = objects
+        reloadVisibleCategories()
+    }
+    private func fetchRecords() {
+        let coreDataRecords = TrackerRecordStore.shared.fetchRecords()
+        let records = TrackerRecordStore.shared.convertRecord(records: coreDataRecords)
+        completedTrackers = records
+        reloadVisibleCategories()
     }
     private func setupEmptyViews() {
         [emptyView, emptyLabel].forEach {
@@ -86,30 +98,15 @@ final class TrackersViewController: UIViewController {
             emptyView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             emptyLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             emptyLabel.topAnchor.constraint(equalTo: emptyView.bottomAnchor, constant: 8),
-
+            
         ])
-
+        
         if visibleCategories.isEmpty {
             emptyView.isHidden = false
             emptyLabel.isHidden = false
             emptyView.image = UIImage(named: "1")
             emptyLabel.text = "Что будем отслеживать?"
         }
-    }
-    @objc private func dateChanged(_ sender: UIDatePicker) {
-        reloadVisibleCategories()
-    }
-    
-    @objc private func addButtonTapped() {
-        let selectTrackerTypeController = SelectTrackerTypeController()
-        selectTrackerTypeController.habitCreateViewControllerDelegate = self
-        selectTrackerTypeController.irregularEventViewControllerDelegate = self
-        self.present(selectTrackerTypeController, animated: true)
-        
-    }
-    @objc func hideKeyboard() {
-        reloadVisibleCategories()
-        searchTextField.resignFirstResponder()
     }
     private func setupConstraints() {
         NSLayoutConstraint.activate([
@@ -122,7 +119,7 @@ final class TrackersViewController: UIViewController {
             searchTextField.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 10),
             searchTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             searchTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            searchTextField.heightAnchor.constraint(equalToConstant: 35)
+            searchTextField.heightAnchor.constraint(equalToConstant: 35),
         ])
     }
     private func createGesture() {
@@ -146,24 +143,16 @@ final class TrackersViewController: UIViewController {
         let customBarItem = UIBarButtonItem(customView: datePicker)
         customBarItem.customView?.widthAnchor.constraint(equalToConstant: 120).isActive = true
         navBar.topItem?.setRightBarButton(customBarItem, animated: false)
-        }
-    
-    private func isTrackerCompletedToday(id: UUID) -> Bool {
-        completedTrackers.contains { tracker in
-            let isSameDay = Calendar.current.isDate(tracker.date, inSameDayAs: datePicker.date)
-            return tracker.id == id && isSameDay
-        }
-    }
-    private func isDateGreaterThanCurrent(cell: TrackerCell) {
-        let dateisGreater = datePicker.date <= currentDate ? true : false
-        if dateisGreater {
-            cell.plusButton.isEnabled = true
-        } else {
-            cell.plusButton.isEnabled = false
-        }
     }
     private func configureEmptyView() {
-        if visibleCategories.isEmpty {
+        if categories.isEmpty && visibleCategories.isEmpty {
+            emptyView.isHidden = false
+            emptyLabel.isHidden = false
+            emptyView.image = UIImage(named: "1")
+            emptyView.widthAnchor.constraint(equalToConstant: 80).isActive = true
+            emptyView.heightAnchor.constraint(equalToConstant: 80).isActive = true
+            emptyLabel.text = "Что будем отслеживать?"
+        } else if visibleCategories.isEmpty {
             emptyView.isHidden = false
             emptyLabel.isHidden = false
             emptyView.image = UIImage(named: "notFound")
@@ -200,6 +189,35 @@ final class TrackersViewController: UIViewController {
         }
         configureEmptyView()
         collectionView.reloadData()
+    }
+    private func isTrackerCompletedToday(id: UUID) -> Bool {
+        completedTrackers.contains { tracker in
+            let isSameDay = Calendar.current.isDate(tracker.date, inSameDayAs: datePicker.date)
+            return tracker.id == id && isSameDay
+        }
+    }
+    private func isDateGreaterThanCurrent(cell: TrackerCell) {
+        let dateisGreater = datePicker.date <= currentDate ? true : false
+        if dateisGreater {
+            cell.plusButton.isEnabled = true
+        } else {
+            cell.plusButton.isEnabled = false
+        }
+    }
+    @objc private func dateChanged(_ sender: UIDatePicker) {
+        reloadVisibleCategories()
+    }
+    
+    @objc private func addButtonTapped() {
+        let selectTrackerTypeController = SelectTrackerTypeController()
+        selectTrackerTypeController.habitCreateViewControllerDelegate = self
+        selectTrackerTypeController.irregularViewControllerDelegate = self
+        self.present(selectTrackerTypeController, animated: true)
+        
+    }
+    @objc func hideKeyboard() {
+        reloadVisibleCategories()
+        searchTextField.resignFirstResponder()
     }
 }
 extension TrackersViewController: UITextFieldDelegate {
@@ -276,20 +294,6 @@ extension TrackersViewController: HabitCreateViewControllerDelegate {
         reloadVisibleCategories()
     }
 }
-extension TrackersViewController: TrackerCellDelegate {
-    func completedTracker(id: UUID, indexPath: IndexPath) {
-        let trackerRecord = TrackerRecord(id: id, date: datePicker.date)
-        completedTrackers.append(trackerRecord)
-        collectionView.reloadItems(at: [indexPath])
-    }
-    func uncompletedTracker(id: UUID, indexPath: IndexPath) {
-        completedTrackers.removeAll { trackerRecord in
-            let isSameDay = Calendar.current.isDate(trackerRecord.date, inSameDayAs: datePicker.date)
-            return trackerRecord.id == id && isSameDay
-        }
-        collectionView.reloadItems(at: [indexPath])
-    }
-}
 extension TrackersViewController: IrregularEventViewControllerDelegate {
     func createButtonTapped(_ tracker: Tracker, category: String) {
         if let index = categories.firstIndex(where: { $0.title  == category }) {
@@ -306,6 +310,30 @@ extension TrackersViewController: IrregularEventViewControllerDelegate {
         reloadData()
     }
     func reloadTrackersData() {
+        reloadVisibleCategories()
+    }
+}
+extension TrackersViewController: TrackerCellDelegate {
+    func completedTracker(id: UUID, indexPath: IndexPath) {
+        let trackerRecord = TrackerRecord(id: id, date: datePicker.date)
+        TrackerRecordStore.shared.addRecord(tracker: trackerRecord)
+        completedTrackers.append(trackerRecord)
+        collectionView.reloadItems(at: [indexPath])
+    }
+    func uncompletedTracker(id: UUID, indexPath: IndexPath) {
+        completedTrackers.removeAll { trackerRecord in
+            let isSameDay = Calendar.current.isDate(trackerRecord.date, inSameDayAs: datePicker.date)
+            TrackerRecordStore.shared.deleteRecord(id: trackerRecord.id)
+            return trackerRecord.id == id && isSameDay
+        }
+        collectionView.reloadItems(at: [indexPath])
+    }
+}
+extension TrackersViewController: TrackerCategoryStoreDelegate {
+    func trackerCategoryUpdate(title: String) {
+        categories.removeAll { category in
+            category.title == title
+        }
         reloadVisibleCategories()
     }
 }

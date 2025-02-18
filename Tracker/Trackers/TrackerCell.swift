@@ -35,7 +35,7 @@ final class TrackerCell: UICollectionViewCell {
         view.backgroundColor = .white
         return view
     }()
-    let plusButton: UIButton = {
+    lazy var plusButton: UIButton = {
         let button = UIButton()
         button.tintColor = .white
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -104,11 +104,11 @@ final class TrackerCell: UICollectionViewCell {
             emojiView.topAnchor.constraint(equalTo: trackerView.topAnchor, constant: 12),
             emojiView.leadingAnchor.constraint(equalTo: trackerView.leadingAnchor, constant: 12),
             emojiView.widthAnchor.constraint(equalToConstant: 24),
-            emojiView.heightAnchor.constraint(equalToConstant: 24)
+            emojiView.heightAnchor.constraint(equalToConstant: 24),
         ])
     }
     func set(object: Tracker, isCompleted: Bool, completedDays: Int, indexPath: IndexPath) {
-        let paragraphStyle = NSMutableParagraphStyle()
+        lazy var paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineHeightMultiple = 1.26
         self.indexPath = indexPath
         self.isCompleted = isCompleted
@@ -127,6 +127,7 @@ final class TrackerCell: UICollectionViewCell {
         self.label.attributedText = NSMutableAttributedString(string: object.name, attributes: [NSAttributedString.Key.paragraphStyle : paragraphStyle])
         self.label.textColor = .white
         self.emojiView.backgroundColor = UIColor(red: 1, green: 1, blue: 1, alpha: 0.7)
+        self.emojiView.layer.cornerRadius = 13
         self.emoji.text = object.emoji
         self.emoji.textAlignment = .center
         self.emoji.font = .systemFont(ofSize: 12)

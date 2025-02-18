@@ -8,7 +8,7 @@
 import UIKit
 final class SelectTrackerTypeController: UIViewController {
     weak var habitCreateViewControllerDelegate: HabitCreateViewControllerDelegate?
-    weak var irregularEventViewControllerDelegate: IrregularEventViewControllerDelegate?
+    weak var irregularViewControllerDelegate: IrregularEventViewControllerDelegate?
     override func viewDidLoad() {
         super.viewDidLoad()
         setupViews()
@@ -20,7 +20,7 @@ final class SelectTrackerTypeController: UIViewController {
         title.translatesAutoresizingMaskIntoConstraints = false
         return title
     }()
-    let habitButton: UIButton = {
+    private lazy var habitButton: UIButton = {
         let button = UIButton()
         button.addTarget(self, action: #selector(habitButtonTapped), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -30,7 +30,7 @@ final class SelectTrackerTypeController: UIViewController {
         button.backgroundColor = .black
         return button
     }()
-    let irregularEventButton: UIButton = {
+    private lazy var irregularEventButton: UIButton = {
         let button = UIButton()
         button.addTarget(self, action: #selector(irregularEventButtonTapped), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -56,7 +56,7 @@ final class SelectTrackerTypeController: UIViewController {
     }
     @objc func irregularEventButtonTapped() {
        let vc = IrregularEventViewController()
-        vc.irregularEventViewControllerDelegate = irregularEventViewControllerDelegate
+        vc.irregularEventViewControllerDelegate = irregularViewControllerDelegate
         present(vc, animated: true)
     }
     func setupViews() {
@@ -71,7 +71,7 @@ final class SelectTrackerTypeController: UIViewController {
             buttonsStackView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             buttonsStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             buttonsStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            buttonsStackView.heightAnchor.constraint(equalToConstant: 140)
+            buttonsStackView.heightAnchor.constraint(equalToConstant: 140),
         ])
     }
 }

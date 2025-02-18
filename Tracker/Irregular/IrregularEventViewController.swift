@@ -13,11 +13,16 @@ protocol IrregularEventViewControllerDelegate: AnyObject {
 final class IrregularEventViewController: UIViewController {
     let dateFormatter = DateFormatter()
     weak var irregularEventViewControllerDelegate: IrregularEventViewControllerDelegate?
+    private var selectedCategory: String = ""
     private var selectedColor: UIColor?
     private var selectedEmoji: String?
     private var trackers: [Tracker] = []
-    private var colors: [UIColor] = []
-    private let emojies = ["😀", "😊", "🔥", "❤️", "🌟", "🎉", "🍕", "🐶", "🌺", "⚽️", "🎸", "🚀", "📷", "📘", "🌈", "🍦", "🎈", "🌻"]
+    private var colors = [#colorLiteral(red: 0.9921568627, green: 0.2980392157, blue: 0.2862745098, alpha: 1), #colorLiteral(red: 1, green: 0.5333333333, blue: 0.1176470588, alpha: 1), #colorLiteral(red: 0, green: 0.4823529412, blue: 0.9803921569, alpha: 1), #colorLiteral(red: 0.431372549, green: 0.2666666667, blue: 0.9960784314, alpha: 1), #colorLiteral(red: 0.2, green: 0.8117647059, blue: 0.4117647059, alpha: 1), #colorLiteral(red: 0.9019607843, green: 0.4274509804, blue: 0.831372549, alpha: 1),
+                          #colorLiteral(red: 0.9840622544, green: 0.8660314083, blue: 0.8633159399, alpha: 1), #colorLiteral(red: 0.2039215686, green: 0.6549019608, blue: 0.9960784314, alpha: 1), #colorLiteral(red: 0.2745098039, green: 0.9019607843, blue: 0.6156862745, alpha: 1), #colorLiteral(red: 0.2078431373, green: 0.2039215686, blue: 0.4862745098, alpha: 1), #colorLiteral(red: 1, green: 0.4039215686, blue: 0.3019607843, alpha: 1), #colorLiteral(red: 1, green: 0.6, blue: 0.8, alpha: 1),
+                          #colorLiteral(red: 0.9647058824, green: 0.768627451, blue: 0.5450980392, alpha: 1), #colorLiteral(red: 0.4745098039, green: 0.5803921569, blue: 0.9607843137, alpha: 1), #colorLiteral(red: 0.5137254902, green: 0.1725490196, blue: 0.9450980392, alpha: 1), #colorLiteral(red: 0.6784313725, green: 0.337254902, blue: 0.8549019608, alpha: 1), #colorLiteral(red: 0.5529411765, green: 0.4470588235, blue: 0.9019607843, alpha: 1), #colorLiteral(red: 0.1843137255, green: 0.8156862745, blue: 0.3450980392, alpha: 1)]
+    private let emojies = ["🙂", "😻", "🌺", "🐶", "❤️", "😱",
+                           "😇", "😡", "🥶", "🤔", "🙌", "🍔",
+                           "🥦", "🏓", "🥇", "🎸", "🏝", "😪"]
     private var habitTitleLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -55,7 +60,8 @@ final class IrregularEventViewController: UIViewController {
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.accessibilityIdentifier = "colorCollectionView"
         collectionView.allowsMultipleSelection = false
-        collectionView.isScrollEnabled = false
+        collectionView.isScrollEnabled = true
+        collectionView.showsVerticalScrollIndicator = false
         collectionView.dataSource = self
         collectionView.delegate =  self
         collectionView.register(IrregularColorCollectionCell.self, forCellWithReuseIdentifier: "IrregularColorCollectionCell")
@@ -82,14 +88,15 @@ final class IrregularEventViewController: UIViewController {
         return view
     }()
     
-    private var textField: UITextField = {
+    private lazy var textField: UITextField = {
         let textField = UITextField()
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.placeholder = "Введите название трекера"
         textField.font = .systemFont(ofSize: 17, weight: .regular)
+        textField.addTarget(self, action: #selector(didChangeTF), for: .editingChanged)
         return textField
     }()
-    private var cancelButton: UIButton = {
+    private lazy var cancelButton: UIButton = {
         var button = UIButton()
         button.setTitle("Отменить", for: .normal)
         button.setTitleColor(.ypRed, for: .normal)
@@ -101,7 +108,7 @@ final class IrregularEventViewController: UIViewController {
         button.layer.cornerRadius = 16
         return button
     }()
-    private var doneButton: UIButton = {
+    private lazy var doneButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.addTarget(self, action: #selector(doneButtonTapped), for: .touchUpInside)
@@ -124,11 +131,19 @@ final class IrregularEventViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        addRandomColors()
         setupViews()
         setupConstraints()
         createGesture()
         textField.delegate = self
+    }
+    @objc func didChangeTF() {
+        guard let text = textField.text else { return }
+        if text.isEmpty {
+            clearTextFieldButton.isHidden = true
+        } else {
+            clearTextFieldButton.isHidden = false
+        }
+        updateCreateButtonState()
     }
     @objc private func cancelButtonTapped() {
         dismiss(animated: true)
@@ -138,24 +153,47 @@ final class IrregularEventViewController: UIViewController {
         guard let trackerTitle = textField.text, !trackerTitle.isEmpty else {
             return
         }
-        
-        let categories = ["Важное", "Домашние дела", "Разное"]
-        let category = categories.randomElement() ?? ""
-        
-        let currentWeekday = getWeekdayValue()
-        
-        let object = Tracker(id: UUID(), name: trackerTitle, color: selectedColor ?? UIColor(), emoji: selectedEmoji ?? "", schedule: currentWeekday, completedDays: 0)
-        irregularEventViewControllerDelegate?.createButtonTapped(object, category: category)
+        let allDay = WeekDay.allCases
+        let object = Tracker(id: UUID(), name: trackerTitle, color: selectedColor ?? UIColor(), emoji: selectedEmoji ?? "", schedule: allDay)
+        TrackerStore.shared.addTracker(tracker: object, category: TrackerCategory(title: selectedCategory, trackers: []))
+        TrackerStore.shared.log()
+        irregularEventViewControllerDelegate?.createButtonTapped(object, category: selectedCategory)
         irregularEventViewControllerDelegate?.reloadTrackersData()
         view.window?.rootViewController?.dismiss(animated: true)
         
     }
     @objc private func clearTextFieldButtonTapped() {
         textField.text = ""
+        updateCreateButtonState()
+        clearTextFieldButton.isHidden = true
     }
     
     @objc private func hideKeyboard() {
         textField.resignFirstResponder()
+    }
+    private func updateCreateButtonState() {
+        guard let text = textField.text else { return }
+        if selectedEmoji == nil ||
+            text.isEmpty || selectedColor == nil || selectedCategory == "" {
+            doneButton.isEnabled = false
+            doneButton.backgroundColor = #colorLiteral(red: 0.7369984984, green: 0.7409694791, blue: 0.7575188279, alpha: 1)
+            
+        } else {
+            doneButton.isEnabled = true
+            doneButton.backgroundColor = .black
+        }
+    }
+    private func didSelectEmoji(_ emoji: String) {
+        selectedEmoji = emoji
+        updateCreateButtonState()
+    }
+    func didSelectColor(_ color: UIColor) {
+        selectedColor = color
+        updateCreateButtonState()
+    }
+    func didSelectCategory(_ category: String) {
+        selectedCategory = category
+        updateCreateButtonState()
     }
     private func getWeekdayValue() -> [WeekDay]{
         let selectedDate = Date()
@@ -224,7 +262,7 @@ final class IrregularEventViewController: UIViewController {
             tableView.topAnchor.constraint(equalTo: textFieldView.bottomAnchor, constant: 24),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            tableView.heightAnchor.constraint(equalToConstant: 150),
+            tableView.heightAnchor.constraint(equalToConstant: 75),
             emojiCollectionView.topAnchor.constraint(equalTo: tableView.bottomAnchor, constant: 30),
             emojiCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 18),
             emojiCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -18),
@@ -259,7 +297,7 @@ extension IrregularEventViewController: UITableViewDataSource {
         let cell = tableView.dequeueReusableCell(withIdentifier: "IrregularTableCell") as! IrregularTableCell
         cell.selectionStyle = .none
         cell.titleLabel.text = "Категория"
-        cell.descriptionLabel.text = "Важное"
+        cell.descriptionLabel.text = selectedCategory
         return cell
     }
 }
@@ -267,6 +305,7 @@ extension IrregularEventViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.row == 0 {
             let categoryVC = CategoryViewController()
+            categoryVC.delegate = self
             present(categoryVC, animated: true)
         }
     }
@@ -279,6 +318,10 @@ extension IrregularEventViewController: UITextFieldDelegate {
         } else {
             clearTextFieldButton.isHidden = false
         }
+    }
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
     }
 }
 extension IrregularEventViewController: UICollectionViewDataSource, UICollectionViewDelegate {
@@ -319,14 +362,16 @@ extension IrregularEventViewController: UICollectionViewDataSource, UICollection
         
         if collectionView.accessibilityIdentifier == "colorCollectionView" {
             let colorCell = collectionView.cellForItem(at: indexPath) as! IrregularColorCollectionCell
-            self.selectedColor = colorCell.label.backgroundColor
+            guard let color = colorCell.label.backgroundColor else { return }
+            didSelectColor(color)
             colorCell.layer.borderWidth = 3
             colorCell.layer.borderColor = colorCell.label.backgroundColor?.withAlphaComponent(0.3).cgColor
             colorCell.layer.cornerRadius = 12
             
         } else if collectionView.accessibilityIdentifier == "emojiCollectionView" {
             let emojiCell = collectionView.cellForItem(at: indexPath) as! IrregularEmojiCollectionCell
-            self.selectedEmoji = emojiCell.label.text
+            guard let emoji = emojiCell.label.text else { return }
+            didSelectEmoji(emoji)
             emojiCell.backgroundColor = #colorLiteral(red: 0.9212860465, green: 0.9279851317, blue: 0.9373531938, alpha: 1)
             emojiCell.layer.cornerRadius = 12
         }
@@ -334,14 +379,14 @@ extension IrregularEventViewController: UICollectionViewDataSource, UICollection
     func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
         if collectionView.accessibilityIdentifier == "colorCollectionView" {
             let colorCell = collectionView.cellForItem(at: indexPath) as! IrregularColorCollectionCell
-            self.selectedColor = nil
+            didSelectColor(UIColor())
             colorCell.layer.borderWidth = 3
             colorCell.layer.borderColor = UIColor.clear.cgColor
             colorCell.layer.cornerRadius = 12
             
         } else if collectionView.accessibilityIdentifier == "emojiCollectionView" {
             let emojiCell = collectionView.cellForItem(at: indexPath) as! IrregularEmojiCollectionCell
-            self.selectedEmoji = ""
+            didSelectEmoji("")
             emojiCell.backgroundColor = .clear
             emojiCell.layer.cornerRadius = 12
         }
@@ -382,5 +427,11 @@ extension IrregularEventViewController: UIGestureRecognizerDelegate {
             return false
         }
         return true
+    }
+}
+extension IrregularEventViewController: CategoryViewControllerDelegate {
+    func didSelectCategory(category: String) {
+        didSelectCategory(category)
+        tableView.reloadData()
     }
 }

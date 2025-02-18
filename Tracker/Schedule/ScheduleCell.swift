@@ -23,7 +23,7 @@ class ScheduleCell: UITableViewCell {
         contentView.addSubview(cellDaysLabel)
         NSLayoutConstraint.activate([
             cellDaysLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            cellDaysLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16)
+            cellDaysLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
         ])
     }
     required init?(coder: NSCoder) {

@@ -9,7 +9,7 @@ import UIKit
 protocol ScheduleViewControllerDelegate: AnyObject {
     func didSelectScheduleDays(_ days: [WeekDay])
 }
-final class ScheduleViewController: UIViewController {
+class ScheduleViewController: UIViewController {
     weak var delegate: ScheduleViewControllerDelegate?
     private var selectedDays: [WeekDay] = []
     private lazy var scheduleTitle: UILabel = {
@@ -78,6 +78,7 @@ extension ScheduleViewController: UITableViewDataSource {
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "ScheduleCell", for: indexPath) as! ScheduleCell
+        cell.selectionStyle = .none
         let switchView = UISwitch()
         let weekDay = WeekDay.allCases[indexPath.row]
         cell.cellDaysLabel.text = weekDay.rawValue
@@ -111,3 +112,33 @@ extension ScheduleViewController: ScheduleCellDelegate {
         }
     }
 }
+enum WeekDay: String, CaseIterable {
+    case monday = "Понедельник"
+    case tuesday = "Вторник"
+    case wednesday = "Среда"
+    case thursday = "Четверг"
+    case friday = "Пятница"
+    case saturday = "Суббота"
+    case sunday = "Воскресенье"
+    
+    var shortTitle: String {
+        switch self {
+            
+        case .monday:
+            return "Пн"
+        case .tuesday:
+            return "Вт"
+        case .wednesday:
+            return "Ср"
+        case .thursday:
+            return "Чт"
+        case .friday:
+            return "Пт"
+        case .saturday:
+            return "Сб"
+        case .sunday:
+            return "Вс"
+        }
+    }
+}
+
