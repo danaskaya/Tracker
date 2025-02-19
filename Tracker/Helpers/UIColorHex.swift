@@ -13,10 +13,10 @@ final class UIColorHex {
         let g: CGFloat = components?[1] ?? 0.0
         let b: CGFloat = components?[2] ?? 0.0
         return String.init(
-        format: "%02lX%02lX%02lX",
-        lroundf(Float(r*255)),
-        lroundf(Float(g*255)),
-        lroundf(Float(b*255))
+            format: "%02lX%02lX%02lX",
+            lroundf(Float(r*255)),
+            lroundf(Float(g*255)),
+            lroundf(Float(b*255))
         )
     }
     static func color(from hex: String) -> UIColor? {

@@ -38,7 +38,7 @@ final class TrackerCell: UICollectionViewCell {
         view.backgroundColor = .white
         return view
     }()
-     lazy var plusButton: UIButton = {
+    lazy var plusButton: UIButton = {
         let button = UIButton()
         button.tintColor = .white
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -114,7 +114,7 @@ final class TrackerCell: UICollectionViewCell {
              isComplete: Bool,
              completedDays: Int,
              indexPath: IndexPath
-        ) {
+    ) {
         lazy var paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineHeightMultiple = 1.26
         self.indexPath = indexPath

@@ -41,16 +41,16 @@ final class TrackersViewController: UIViewController {
         return label
     }()
     private lazy var datePicker: UIDatePicker = {
-            let datePicker = UIDatePicker()
-            datePicker.preferredDatePickerStyle = .compact
-            datePicker.datePickerMode = .date
-            datePicker.tintColor = .ypBlue
-            datePicker.locale = Locale(identifier: "ru_RU")
-            datePicker.calendar.firstWeekday = 2
-            datePicker.clipsToBounds = true
-            datePicker.addTarget(self, action: #selector(dateChanged(_:)), for: .valueChanged)
-            return datePicker
-        }()
+        let datePicker = UIDatePicker()
+        datePicker.preferredDatePickerStyle = .compact
+        datePicker.datePickerMode = .date
+        datePicker.tintColor = .ypBlue
+        datePicker.locale = Locale(identifier: "ru_RU")
+        datePicker.calendar.firstWeekday = 2
+        datePicker.clipsToBounds = true
+        datePicker.addTarget(self, action: #selector(dateChanged(_:)), for: .valueChanged)
+        return datePicker
+    }()
     private lazy var searchTextField: UISearchTextField = {
         let textField = UISearchTextField()
         textField.translatesAutoresizingMaskIntoConstraints = false

@@ -371,8 +371,8 @@ extension HabitCreateViewController: UICollectionViewDataSource, UICollectionVie
                 colorCell.layer.borderColor = UIColor.clear.cgColor
                 colorCell.layer.cornerRadius = 12
             } else {
-                    assertionFailure("Failed to cast cell to HabitCollectionColorCell")
-                }
+                assertionFailure("Failed to cast cell to HabitCollectionColorCell")
+            }
             
         } else if collectionView.accessibilityIdentifier == "habitCollectionEmojiView" {
             if let emojiCell = collectionView.cellForItem(at: indexPath) as? HabitCollectionEmojiCell {
