@@ -77,7 +77,9 @@ extension ScheduleViewController: UITableViewDataSource {
         7
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "ScheduleCell", for: indexPath) as! ScheduleCell
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "ScheduleCell", for: indexPath) as? ScheduleCell else {
+            return UITableViewCell()
+        }
         cell.selectionStyle = .none
         let switchView = UISwitch()
         let weekDay = WeekDay.allCases[indexPath.row]

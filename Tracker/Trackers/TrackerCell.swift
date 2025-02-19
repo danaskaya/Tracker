@@ -6,12 +6,15 @@
 //
 
 import UIKit
+
 protocol TrackerCellDelegate: AnyObject {
-    func completedTracker(id: UUID, indexPath: IndexPath)
-    func uncompletedTracker(id: UUID, indexPath: IndexPath)
+    func completeTracker(id: UUID, indexPath: IndexPath)
+    func uncompleteTracker(id: UUID, indexPath: IndexPath)
 }
+
 final class TrackerCell: UICollectionViewCell {
-    private var isCompleted: Bool = false
+    
+    private var isComplete: Bool = false
     private var trackerID: UUID?
     private var indexPath: IndexPath?
     weak var delegate: TrackerCellDelegate?
@@ -29,13 +32,13 @@ final class TrackerCell: UICollectionViewCell {
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
-    private let trackerView: UIView = {
+    private let trackerView : UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.backgroundColor = .white
         return view
     }()
-    lazy var plusButton: UIButton = {
+     lazy var plusButton: UIButton = {
         let button = UIButton()
         button.tintColor = .white
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -55,10 +58,10 @@ final class TrackerCell: UICollectionViewCell {
             assertionFailure("no tracker id")
             return
         }
-        if isCompleted {
-            delegate?.uncompletedTracker(id: trackerID, indexPath: indexPath)
+        if isComplete {
+            delegate?.uncompleteTracker(id: trackerID, indexPath: indexPath)
         } else {
-            delegate?.completedTracker(id: trackerID, indexPath: indexPath)
+            delegate?.completeTracker(id: trackerID, indexPath: indexPath)
         }
     }
     override init(frame: CGRect) {
@@ -107,14 +110,18 @@ final class TrackerCell: UICollectionViewCell {
             emojiView.heightAnchor.constraint(equalToConstant: 24),
         ])
     }
-    func set(object: Tracker, isCompleted: Bool, completedDays: Int, indexPath: IndexPath) {
+    func set(object: Tracker,
+             isComplete: Bool,
+             completedDays: Int,
+             indexPath: IndexPath
+        ) {
         lazy var paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineHeightMultiple = 1.26
         self.indexPath = indexPath
-        self.isCompleted = isCompleted
+        self.isComplete = isComplete
         self.trackerID = object.id
         self.trackerView.backgroundColor = object.color
-        if !isCompleted {
+        if !isComplete {
             self.plusButton.backgroundColor = object.color
             self.plusButton.setImage(UIImage(systemName: "plus"), for: .normal)
         } else {
@@ -125,7 +132,7 @@ final class TrackerCell: UICollectionViewCell {
         let wordDay = convertCompletedDays(completedDays)
         countLabel.text = "\(wordDay)"
         self.label.attributedText = NSMutableAttributedString(string: object.name, attributes: [NSAttributedString.Key.paragraphStyle : paragraphStyle])
-        self.label.textColor = .white
+        self.label.textColor  = .white
         self.emojiView.backgroundColor = UIColor(red: 1, green: 1, blue: 1, alpha: 0.7)
         self.emojiView.layer.cornerRadius = 13
         self.emoji.text = object.emoji

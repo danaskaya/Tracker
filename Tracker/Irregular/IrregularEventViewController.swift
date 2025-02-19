@@ -294,7 +294,9 @@ extension IrregularEventViewController: UITableViewDataSource {
         1
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "IrregularTableCell") as! IrregularTableCell
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "IrregularTableCell") as? IrregularTableCell else {
+            fatalError("Failed to cast cell to IrregulatTableCell")
+        }
         cell.selectionStyle = .none
         cell.titleLabel.text = "Категория"
         cell.descriptionLabel.text = selectedCategory
@@ -336,11 +338,15 @@ extension IrregularEventViewController: UICollectionViewDataSource, UICollection
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         if collectionView.accessibilityIdentifier == "colorCollectionView" {
-            let colorCell = collectionView.dequeueReusableCell(withReuseIdentifier: "IrregularColorCollectionCell", for: indexPath) as! IrregularColorCollectionCell
+            guard let colorCell = collectionView.dequeueReusableCell(withReuseIdentifier: "IrregularColorCollectionCell", for: indexPath) as? IrregularColorCollectionCell else {
+                fatalError("Failed to cast cell to IrregularColorCollectionCell")
+            }
             colorCell.label.backgroundColor = colors[indexPath.row]
             return colorCell
         } else if collectionView.accessibilityIdentifier == "emojiCollectionView" {
-            let emojiCell = collectionView.dequeueReusableCell(withReuseIdentifier: "IrregularEmojiCollectionCell", for: indexPath) as! IrregularEmojiCollectionCell
+            guard let emojiCell = collectionView.dequeueReusableCell(withReuseIdentifier: "IrregularEmojiCollectionCell", for: indexPath) as? IrregularEmojiCollectionCell else {
+                fatalError("Failed to cast cell to IrregularEmojiCollectionCell")
+            }
             emojiCell.label.text = emojies[indexPath.row]
             return emojiCell
         }
@@ -348,11 +354,15 @@ extension IrregularEventViewController: UICollectionViewDataSource, UICollection
     }
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         if collectionView.accessibilityIdentifier == "colorCollectionView" {
-            let colorHeaderCell = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "IrregularColorCollectionHeaderCell", for: indexPath) as! IrregularColorCollectionHeaderCell
+            guard let colorHeaderCell = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "IrregularColorCollectionHeaderCell", for: indexPath) as? IrregularColorCollectionHeaderCell else {
+                fatalError("Failed to cast cell to IrregularColorCollectionHeaderCell")
+            }
             colorHeaderCell.title.text = "Цвет"
             return colorHeaderCell
         } else if collectionView.accessibilityIdentifier == "emojiCollectionView" {
-            let emojiHeaderCell = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "IrregularEmojiCollectionHeaderCell", for: indexPath) as! IrregularEmojiCollectionHeaderCell
+            guard let emojiHeaderCell = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "IrregularEmojiCollectionHeaderCell", for: indexPath) as? IrregularEmojiCollectionHeaderCell else {
+                fatalError("Failed to cast cell to IrregularEmojiCollectionHeaderCell")
+            }
             emojiHeaderCell.title.text = "Emoji"
             return emojiHeaderCell
         }
@@ -361,7 +371,7 @@ extension IrregularEventViewController: UICollectionViewDataSource, UICollection
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
         if collectionView.accessibilityIdentifier == "colorCollectionView" {
-            let colorCell = collectionView.cellForItem(at: indexPath) as! IrregularColorCollectionCell
+            guard let colorCell = collectionView.cellForItem(at: indexPath) as? IrregularColorCollectionCell else {return}
             guard let color = colorCell.label.backgroundColor else { return }
             didSelectColor(color)
             colorCell.layer.borderWidth = 3
@@ -369,7 +379,7 @@ extension IrregularEventViewController: UICollectionViewDataSource, UICollection
             colorCell.layer.cornerRadius = 12
             
         } else if collectionView.accessibilityIdentifier == "emojiCollectionView" {
-            let emojiCell = collectionView.cellForItem(at: indexPath) as! IrregularEmojiCollectionCell
+            guard let emojiCell = collectionView.cellForItem(at: indexPath) as? IrregularEmojiCollectionCell else {return}
             guard let emoji = emojiCell.label.text else { return }
             didSelectEmoji(emoji)
             emojiCell.backgroundColor = #colorLiteral(red: 0.9212860465, green: 0.9279851317, blue: 0.9373531938, alpha: 1)
@@ -378,14 +388,14 @@ extension IrregularEventViewController: UICollectionViewDataSource, UICollection
     }
     func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
         if collectionView.accessibilityIdentifier == "colorCollectionView" {
-            let colorCell = collectionView.cellForItem(at: indexPath) as! IrregularColorCollectionCell
+            guard let colorCell = collectionView.cellForItem(at: indexPath) as? IrregularColorCollectionCell else { return }
             didSelectColor(UIColor())
             colorCell.layer.borderWidth = 3
             colorCell.layer.borderColor = UIColor.clear.cgColor
             colorCell.layer.cornerRadius = 12
             
         } else if collectionView.accessibilityIdentifier == "emojiCollectionView" {
-            let emojiCell = collectionView.cellForItem(at: indexPath) as! IrregularEmojiCollectionCell
+            guard let emojiCell = collectionView.cellForItem(at: indexPath) as? IrregularEmojiCollectionCell else { return }
             didSelectEmoji("")
             emojiCell.backgroundColor = .clear
             emojiCell.layer.cornerRadius = 12

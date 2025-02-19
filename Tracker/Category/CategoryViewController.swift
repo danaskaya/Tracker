@@ -126,7 +126,9 @@ extension CategoryViewController: UITableViewDataSource {
         return categories.count
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell", for: indexPath) as! CategoryCell
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell", for: indexPath) as? CategoryCell else {
+            fatalError("Failed to cast cell to CategoryCell")
+        }
         cell.selectionStyle = .none
         let object = categories[indexPath.row]
         cell.set(cell: cell, categories: categories, object: object, indexPath: indexPath)
@@ -147,7 +149,7 @@ extension CategoryViewController: UITableViewDataSource {
 }
 extension CategoryViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let cell = tableView.cellForRow(at: indexPath) as! CategoryCell
+        guard let cell = tableView.cellForRow(at: indexPath) as? CategoryCell else { return }
         if let text = cell.titleLabel.text {
             delegate?.didSelectCategory(category: text)
             cell.doneImageView.isHidden = false
@@ -155,7 +157,9 @@ extension CategoryViewController: UITableViewDelegate {
         }
     }
     func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
-        let cell = tableView.cellForRow(at: indexPath) as! CategoryCell
+        guard let cell = tableView.cellForRow(at: indexPath) as? CategoryCell else {
+            return nil
+        }
         return UIContextMenuConfiguration(actionProvider: { action in
             return UIMenu(children: [
                 UIAction(title: "Удалить", handler: { _ in
@@ -172,9 +176,10 @@ extension CategoryViewController: UITableViewDelegate {
     }
     func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        let cell = tableView.cellForRow(at: indexPath) as! CategoryCell
-        if !cell.isSelected {
-            cell.doneImageView.isHidden = true
+        if let cell = tableView.cellForRow(at: indexPath) as? CategoryCell {
+            if !cell.isSelected {
+                cell.doneImageView.isHidden = true
+            }
         }
     }
 }

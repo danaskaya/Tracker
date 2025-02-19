@@ -7,9 +7,11 @@
 
 import UIKit
 import CoreData
+
 protocol TrackerCategoryStoreDelegate: AnyObject {
     func trackerCategoryUpdate(title: String)
 }
+
 final class TrackerCategoryStore: NSObject {
     static let shared = TrackerCategoryStore()
     private override init() {
@@ -17,14 +19,15 @@ final class TrackerCategoryStore: NSObject {
     }
     weak var delegate: TrackerCategoryStoreDelegate?
     private let colorHex = UIColorHex()
-    private var appDelegate: AppDelegate {
-        UIApplication.shared.delegate as! AppDelegate
+    private var appDelegate: AppDelegate? {
+        return UIApplication.shared.delegate as? AppDelegate
     }
-    private var context: NSManagedObjectContext {
-        appDelegate.persistentContainer.viewContext
+    private var context: NSManagedObjectContext? {
+        return appDelegate?.persistentContainer.viewContext
     }
     func fetchCoreDataCategory() -> [TrackerCategoryCoreData] {
         var categories: [TrackerCategoryCoreData] = []
+        guard let context = context else { return categories }
         let request = TrackerCategoryCoreData.fetchRequest()
         do {
             categories = try context.fetch(request)
@@ -35,34 +38,24 @@ final class TrackerCategoryStore: NSObject {
     }
     func fetchCategoryWithTitle(title: String) -> TrackerCategoryCoreData? {
         let request = NSFetchRequest<TrackerCategoryCoreData>(entityName: "TrackerCategoryCoreData")
-        var category: [TrackerCategoryCoreData] = []
         request.returnsObjectsAsFaults = false
         request.predicate = NSPredicate(format: "title == %@", title)
         do {
-            category = try context.fetch(request)
+            let categories = try context?.fetch(request) ?? []
+            return categories.first
         } catch let error as NSError {
             print(error.localizedDescription)
-        }
-        guard let firstCat = category.first else {
-            assertionFailure("No category")
-            return nil
-        }
-        if category.count > 0 {
-            return firstCat
-        } else {
             return nil
         }
     }
     func convertToCategory(_ categories: [TrackerCategoryCoreData]) -> [TrackerCategory] {
         var returnedCategories: [TrackerCategory] = []
         for category in categories {
-            let title = category.title!
-            let allTrackers = category.trackers?.allObjects as? [TrackerCoreData]
-            var trackers: [Tracker] = []
-            guard let allTrackers = allTrackers else {
-                assertionFailure("no Trackers")
-                return [TrackerCategory(title: "", trackers: [])]
+            guard let title = category.title else {
+                continue
             }
+            let allTrackers = category.trackers?.allObjects as? [TrackerCoreData] ?? []
+            var trackers: [Tracker] = []
             for tracker in allTrackers {
                 guard let trackerID = tracker.id,
                       let trackerName = tracker.name,
@@ -72,7 +65,7 @@ final class TrackerCategoryStore: NSObject {
                 else {
                     continue
                 }
-                let newSchedule = trackerSchedule.compactMap() {
+                let newSchedule = trackerSchedule.compactMap {
                     WeekDay(rawValue: $0)
                 }
                 let newTracker = Tracker(
@@ -89,42 +82,36 @@ final class TrackerCategoryStore: NSObject {
         return returnedCategories
     }
     func ifCategoryAlreadyExist(category: TrackerCategory) -> Bool {
-        var categories: [TrackerCategoryCoreData] = []
-        let request = TrackerCategoryCoreData.fetchRequest()
-        do {
-            categories = try context.fetch(request)
-            
-        } catch let error as NSError {
-            print(error.localizedDescription)
-        }
-        if categories.contains(where: { $0.title == category.title }) {
-            return true
-        } else {
+        guard let categories = try? context?.fetch(TrackerCategoryCoreData.fetchRequest())
+        else {
             return false
         }
+        return categories.contains(where: { $0.title == category.title })
     }
     func addCategory(category: TrackerCategory) {
-        let newCategory = TrackerCategoryCoreData(context: context)
+        guard let context = context else { return }
         if !ifCategoryAlreadyExist(category: category) {
+            let newCategory = TrackerCategoryCoreData(context: context)
             newCategory.title = category.title
-            appDelegate.saveContext()
+            appDelegate?.saveContext()
         }
     }
     func deleteCategory(with title: String) {
         let request = NSFetchRequest<TrackerCategoryCoreData>(entityName: "TrackerCategoryCoreData")
         request.predicate = NSPredicate(format: "title == %@", title)
         do {
-            let object = try context.fetch(request)
-            context.delete(object[0])
-            delegate?.trackerCategoryUpdate(title: title)
+            if let object = try context?.fetch(request), !object.isEmpty {
+                context?.delete(object[0])
+                delegate?.trackerCategoryUpdate(title: title)
+            }
         } catch let error as NSError {
             print(error.localizedDescription)
         }
         
-        appDelegate.saveContext()
+        appDelegate?.saveContext()
     }
     public func log() {
-        if let url = appDelegate.persistentContainer.persistentStoreCoordinator.persistentStores.first?.url {
+        if let url = appDelegate?.persistentContainer.persistentStoreCoordinator.persistentStores.first?.url {
             print(url)
         }
     }

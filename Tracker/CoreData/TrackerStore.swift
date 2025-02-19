@@ -16,12 +16,15 @@ final class TrackerStore: NSObject {
         super.init()
     }
     weak var delegate: TrackerStoreDelegate?
-    private var appDelegate: AppDelegate {
-        UIApplication.shared.delegate as! AppDelegate
+    private var appDelegate: AppDelegate? {
+        return UIApplication.shared.delegate as? AppDelegate
     }
     private lazy var fetchedResultsController: NSFetchedResultsController<TrackerCoreData> = {
         let fetchRequest: NSFetchRequest<TrackerCoreData> = TrackerCoreData.fetchRequest()
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
+        guard let context = context else {
+            fatalError("Failed to get context")
+        }
         let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: context, sectionNameKeyPath: nil, cacheName: nil)
         fetchedResultsController.delegate = self
         do {
@@ -31,8 +34,8 @@ final class TrackerStore: NSObject {
         }
         return fetchedResultsController
     }()
-    private var context: NSManagedObjectContext {
-        appDelegate.persistentContainer.viewContext
+    private var context: NSManagedObjectContext? {
+        return appDelegate?.persistentContainer.viewContext
     }
     func convertToTracker(coreDataTracker: TrackerCoreData) -> Tracker {
         guard let id = coreDataTracker.id,
@@ -52,6 +55,7 @@ final class TrackerStore: NSObject {
         return tracker
     }
     func addTracker(tracker: Tracker, category: TrackerCategory) {
+        guard let context = context else { return }
         let newTracker = TrackerCoreData(context: context)
         newTracker.id = tracker.id
         newTracker.name = tracker.name
@@ -62,18 +66,21 @@ final class TrackerStore: NSObject {
         }
         let fetchedCategory = TrackerCategoryStore.shared.fetchCategoryWithTitle(title: category.title)
         newTracker.category = fetchedCategory
-        appDelegate.saveContext()
+        appDelegate?.saveContext()
     }
     func deleteTracker(with name: String) {
+        guard let context = context else { return }
         let request = NSFetchRequest<TrackerCoreData>(entityName: "TrackerCoreData")
         request.predicate = NSPredicate(format: "name == %@", name)
         do {
-            let object = try context.fetch(request)
-            context.delete(object[0])
+            let objects = try context.fetch(request)
+            if let objectToDelete = objects.first {
+                context.delete(objectToDelete)
+            }
         } catch let error as NSError {
             print(error.localizedDescription)
         }
-        appDelegate.saveContext()
+        appDelegate?.saveContext()
     }
     func fetchTrackers() {
         do {
@@ -86,7 +93,7 @@ final class TrackerStore: NSObject {
         }
     }
     public func log() {
-        if let url = appDelegate.persistentContainer.persistentStoreCoordinator.persistentStores.first?.url {
+        if let url = appDelegate?.persistentContainer.persistentStoreCoordinator.persistentStores.first?.url {
             print(url)
         }
     }
