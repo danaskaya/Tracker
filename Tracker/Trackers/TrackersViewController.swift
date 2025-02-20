@@ -114,7 +114,7 @@ final class TrackersViewController: UIViewController {
             collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             titleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 88),
             titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            searchTextField.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 10),
+            searchTextField.topAnchor.constraint(equalTo: view.topAnchor, constant: 136),
             searchTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             searchTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             searchTextField.heightAnchor.constraint(equalToConstant: 35),
@@ -136,6 +136,7 @@ final class TrackersViewController: UIViewController {
         navBar.barTintColor = view.backgroundColor
         let addTaskButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addButtonTapped))
         addTaskButton.tintColor = .black
+        addTaskButton.customView?.widthAnchor.constraint(equalToConstant: 42).isActive = true
         navBar.topItem?.setLeftBarButton(addTaskButton, animated: false)
         let customBarItem = UIBarButtonItem(customView: datePicker)
         customBarItem.customView?.widthAnchor.constraint(equalToConstant: 120).isActive = true
