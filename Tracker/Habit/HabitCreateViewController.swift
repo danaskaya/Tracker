@@ -315,36 +315,44 @@ extension HabitCreateViewController: UICollectionViewDataSource, UICollectionVie
         18
     }
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        if collectionView.accessibilityIdentifier == "habitCollectionColorView" {
-            guard let colorCell = collectionView.dequeueReusableCell(withReuseIdentifier: "HabitCollectionColorCell", for: indexPath) as? HabitCollectionColorCell else {
-                fatalError("Failed to cast cell to HabitCollectionColorCell")
-            }
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: collectionView.accessibilityIdentifier == "habitCollectionColorView" ? "HabitCollectionColorCell" : "HabitCollectionEmojiCell", for: indexPath)
+        
+        if collectionView.accessibilityIdentifier == "habitCollectionColorView", let colorCell = cell as? HabitCollectionColorCell {
             colorCell.label.backgroundColor = colors[indexPath.row]
-            return colorCell
-        } else if collectionView.accessibilityIdentifier == "habitCollectionEmojiView" {
-            guard let emojiCell = collectionView.dequeueReusableCell(withReuseIdentifier: "HabitCollectionEmojiCell", for: indexPath) as? HabitCollectionEmojiCell else {
-                fatalError("Failed to cast cell to HabitCollectionEmojiCell")
-            }
+            return cell
+        } else if collectionView.accessibilityIdentifier == "habitCollectionEmojiView", let emojiCell = cell as? HabitCollectionEmojiCell {
             emojiCell.label.text = emojies[indexPath.row]
-            return emojiCell
+            return cell
+        } else {
+            fatalError("No collection")
         }
-        fatalError("No collection")
     }
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-        if collectionView.accessibilityIdentifier == "habitCollectionColorView" {
-            guard let colorHeaderCell = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "HabitCollectionColorHeaderCell", for: indexPath) as? HabitCollectionColorHeaderCell else {
-                fatalError("Failed to cast cell to HabitCollectionColorHeaderCell")
-            }
-            colorHeaderCell.title.text = "Цвет"
-            return colorHeaderCell
-        } else if collectionView.accessibilityIdentifier == "habitCollectionEmojiView" {
-            guard let emojiHeaderCell = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "HabitCollectionEmojiHeaderCell", for: indexPath) as? HabitCollectionEmojiHeaderCell else {
-                fatalError("Failed to cast cell to HabitCollectionEmojiHeaderCell")
-            }
-            emojiHeaderCell.title.text = "Emoji"
-            return emojiHeaderCell
+        let viewIdentifier: String
+        let title: String
+        
+        switch collectionView.accessibilityIdentifier {
+        case "habitCollectionColorView":
+            viewIdentifier = "HabitCollectionColorHeaderCell"
+            title = "Цвет"
+        case "habitCollectionEmojiView":
+            viewIdentifier = "HabitCollectionEmojiHeaderCell"
+            title = "Emoji"
+        default:
+            fatalError("No cells")
         }
-        fatalError("No cells")
+        
+        let headerCell = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: viewIdentifier, for: indexPath)
+        
+        if let colorHeaderCell = headerCell as? HabitCollectionColorHeaderCell {
+            colorHeaderCell.title.text = title
+            return colorHeaderCell
+        } else if let emojiHeaderCell = headerCell as? HabitCollectionEmojiHeaderCell {
+            emojiHeaderCell.title.text = title
+            return emojiHeaderCell
+        } else {
+            fatalError("Unable to cast supplementary view to expected type")
+        }
     }
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if collectionView.accessibilityIdentifier == "habitCollectionColorView" {
@@ -373,7 +381,6 @@ extension HabitCreateViewController: UICollectionViewDataSource, UICollectionVie
             } else {
                 assertionFailure("Failed to cast cell to HabitCollectionColorCell")
             }
-            
         } else if collectionView.accessibilityIdentifier == "habitCollectionEmojiView" {
             if let emojiCell = collectionView.cellForItem(at: indexPath) as? HabitCollectionEmojiCell {
                 didSelectEmoji("")

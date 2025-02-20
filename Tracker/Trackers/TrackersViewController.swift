@@ -102,7 +102,7 @@ final class TrackersViewController: UIViewController {
         if visibleCategories.isEmpty {
             emptyView.isHidden = false
             emptyLabel.isHidden = false
-            emptyView.image = UIImage(named: "mockImage")
+            emptyView.image = UIImage(named: "1")
             emptyLabel.text = "Что будем отслеживать?"
         }
     }
@@ -145,7 +145,7 @@ final class TrackersViewController: UIViewController {
         if  categories.isEmpty && visibleCategories.isEmpty {
             emptyView.isHidden = false
             emptyLabel.isHidden = false
-            emptyView.image = UIImage(named: "mockImage")
+            emptyView.image = UIImage(named: "1")
             emptyView.widthAnchor.constraint(equalToConstant: 80).isActive = true
             emptyView.heightAnchor.constraint(equalToConstant: 80).isActive = true
             emptyLabel.text = "Что будем отслеживать?"

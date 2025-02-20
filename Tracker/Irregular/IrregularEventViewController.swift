@@ -336,37 +336,46 @@ extension IrregularEventViewController: UICollectionViewDataSource, UICollection
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cellIdentifier: String
         
         if collectionView.accessibilityIdentifier == "colorCollectionView" {
-            guard let colorCell = collectionView.dequeueReusableCell(withReuseIdentifier: "IrregularColorCollectionCell", for: indexPath) as? IrregularColorCollectionCell else {
-                fatalError("Failed to cast cell to IrregularColorCollectionCell")
-            }
-            colorCell.label.backgroundColor = colors[indexPath.row]
-            return colorCell
+            cellIdentifier = "IrregularColorCollectionCell"
         } else if collectionView.accessibilityIdentifier == "emojiCollectionView" {
-            guard let emojiCell = collectionView.dequeueReusableCell(withReuseIdentifier: "IrregularEmojiCollectionCell", for: indexPath) as? IrregularEmojiCollectionCell else {
-                fatalError("Failed to cast cell to IrregularEmojiCollectionCell")
-            }
-            emojiCell.label.text = emojies[indexPath.row]
-            return emojiCell
+            cellIdentifier = "IrregularEmojiCollectionCell"
+        } else {
+            fatalError("No collection")
         }
-        fatalError("No collection")
+        
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellIdentifier, for: indexPath)
+        
+        if let colorCell = cell as? IrregularColorCollectionCell {
+            colorCell.label.backgroundColor = colors[indexPath.row]
+        } else if let emojiCell = cell as? IrregularEmojiCollectionCell {
+            emojiCell.label.text = emojies[indexPath.row]
+        }
+        
+        return cell
     }
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        let headerIdentifier: String
+        
         if collectionView.accessibilityIdentifier == "colorCollectionView" {
-            guard let colorHeaderCell = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "IrregularColorCollectionHeaderCell", for: indexPath) as? IrregularColorCollectionHeaderCell else {
-                fatalError("Failed to cast cell to IrregularColorCollectionHeaderCell")
-            }
-            colorHeaderCell.title.text = "Цвет"
-            return colorHeaderCell
+            headerIdentifier = "IrregularColorCollectionHeaderCell"
         } else if collectionView.accessibilityIdentifier == "emojiCollectionView" {
-            guard let emojiHeaderCell = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "IrregularEmojiCollectionHeaderCell", for: indexPath) as? IrregularEmojiCollectionHeaderCell else {
-                fatalError("Failed to cast cell to IrregularEmojiCollectionHeaderCell")
-            }
-            emojiHeaderCell.title.text = "Emoji"
-            return emojiHeaderCell
+            headerIdentifier = "IrregularEmojiCollectionHeaderCell"
+        } else {
+            fatalError("No cells")
         }
-        fatalError("No cells")
+        
+        let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: headerIdentifier, for: indexPath)
+        
+        if let colorHeaderCell = headerView as? IrregularColorCollectionHeaderCell {
+            colorHeaderCell.title.text = "Цвет"
+        } else if let emojiHeaderCell = headerView as? IrregularEmojiCollectionHeaderCell {
+            emojiHeaderCell.title.text = "Emoji"
+        }
+        
+        return headerView
     }
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
