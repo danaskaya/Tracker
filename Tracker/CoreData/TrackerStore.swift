@@ -16,14 +16,12 @@ final class TrackerStore: NSObject {
         super.init()
     }
     weak var delegate: TrackerStoreDelegate?
-    private var appDelegate: AppDelegate? {
-        return UIApplication.shared.delegate as? AppDelegate
-    }
     private lazy var fetchedResultsController: NSFetchedResultsController<TrackerCoreData> = {
         let fetchRequest: NSFetchRequest<TrackerCoreData> = TrackerCoreData.fetchRequest()
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
         guard let context = context else {
-            fatalError("Failed to get context")
+            assertionFailure("Failed to get context")
+            return NSFetchedResultsController<TrackerCoreData>()
         }
         let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: context, sectionNameKeyPath: nil, cacheName: nil)
         fetchedResultsController.delegate = self
@@ -35,7 +33,7 @@ final class TrackerStore: NSObject {
         return fetchedResultsController
     }()
     private var context: NSManagedObjectContext? {
-        return appDelegate?.persistentContainer.viewContext
+        return DataBaseStore.shared.persistentContainer.viewContext
     }
     func convertToTracker(coreDataTracker: TrackerCoreData) -> Tracker {
         guard let id = coreDataTracker.id,
@@ -66,7 +64,7 @@ final class TrackerStore: NSObject {
         }
         let fetchedCategory = TrackerCategoryStore.shared.fetchCategoryWithTitle(title: category.title)
         newTracker.category = fetchedCategory
-        appDelegate?.saveContext()
+        DataBaseStore.shared.saveContext()
     }
     func deleteTracker(with name: String) {
         guard let context = context else { return }
@@ -80,7 +78,7 @@ final class TrackerStore: NSObject {
         } catch let error as NSError {
             print(error.localizedDescription)
         }
-        appDelegate?.saveContext()
+        DataBaseStore.shared.saveContext()
     }
     func fetchTrackers() {
         do {
@@ -92,8 +90,8 @@ final class TrackerStore: NSObject {
             print("Error fetching results: \(error)")
         }
     }
-    public func log() {
-        if let url = appDelegate?.persistentContainer.persistentStoreCoordinator.persistentStores.first?.url {
+    func log() {
+        if let url = DataBaseStore.shared.persistentContainer.persistentStoreCoordinator.persistentStores.first?.url {
             print(url)
         }
     }

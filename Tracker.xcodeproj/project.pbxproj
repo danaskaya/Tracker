@@ -47,6 +47,7 @@
 		08A23C612D611C3A00DF9F57 /* TrackerRecordCoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08A23C602D611C3A00DF9F57 /* TrackerRecordCoreData.swift */; };
 		08A23C632D61E83E00DF9F57 /* AddCategoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08A23C622D61E83E00DF9F57 /* AddCategoryViewController.swift */; };
 		08A23C662D6275A900DF9F57 /* OnboardingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08A23C652D6275A900DF9F57 /* OnboardingViewController.swift */; };
+		08B0F0612D68D0FF00CBD20F /* DataBaseStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B0F0602D68D0EC00CBD20F /* DataBaseStore.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -92,6 +93,7 @@
 		08A23C602D611C3A00DF9F57 /* TrackerRecordCoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackerRecordCoreData.swift; sourceTree = "<group>"; };
 		08A23C622D61E83E00DF9F57 /* AddCategoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCategoryViewController.swift; sourceTree = "<group>"; };
 		08A23C652D6275A900DF9F57 /* OnboardingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewController.swift; sourceTree = "<group>"; };
+		08B0F0602D68D0EC00CBD20F /* DataBaseStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataBaseStore.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -230,6 +232,7 @@
 		08A23C522D61029F00DF9F57 /* CoreData */ = {
 			isa = PBXGroup;
 			children = (
+				08B0F0602D68D0EC00CBD20F /* DataBaseStore.swift */,
 				08A23C532D6103D500DF9F57 /* TrackerStore.swift */,
 				08A23C552D6103E500DF9F57 /* TrackerCategoryStore.swift */,
 				08A23C572D6103F200DF9F57 /* TrackerRecordStore.swift */,
@@ -341,6 +344,7 @@
 				08A23C182D5A4EDE00DF9F57 /* TabBarController.swift in Sources */,
 				08A23C212D5A5CCD00DF9F57 /* SelectTrackerTypeController.swift in Sources */,
 				08A23C662D6275A900DF9F57 /* OnboardingViewController.swift in Sources */,
+				08B0F0612D68D0FF00CBD20F /* DataBaseStore.swift in Sources */,
 				08A23C5B2D6111AC00DF9F57 /* UIColorHex.swift in Sources */,
 				08A23C562D6103E500DF9F57 /* TrackerCategoryStore.swift in Sources */,
 				08A23C3D2D5D326300DF9F57 /* HabitCollectionColorCell.swift in Sources */,

@@ -46,7 +46,8 @@ final class CategoryCell: UITableViewCell {
         ])
     }
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        assertionFailure("init(coder:) has not been implemented")
+        return nil
     }
     func set(cell: UITableViewCell, categories: [String], object: String, indexPath: IndexPath) {
         contentView.backgroundColor = .clear

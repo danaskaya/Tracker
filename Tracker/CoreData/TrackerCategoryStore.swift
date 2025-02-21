@@ -19,11 +19,8 @@ final class TrackerCategoryStore: NSObject {
     }
     weak var delegate: TrackerCategoryStoreDelegate?
     private let colorHex = UIColorHex()
-    private var appDelegate: AppDelegate? {
-        return UIApplication.shared.delegate as? AppDelegate
-    }
     private var context: NSManagedObjectContext? {
-        return appDelegate?.persistentContainer.viewContext
+        return DataBaseStore.shared.persistentContainer.viewContext
     }
     func fetchCoreDataCategory() -> [TrackerCategoryCoreData] {
         var categories: [TrackerCategoryCoreData] = []
@@ -93,7 +90,7 @@ final class TrackerCategoryStore: NSObject {
         if !ifCategoryAlreadyExist(category: category) {
             let newCategory = TrackerCategoryCoreData(context: context)
             newCategory.title = category.title
-            appDelegate?.saveContext()
+            DataBaseStore.shared.saveContext()
         }
     }
     func deleteCategory(with title: String) {
@@ -108,10 +105,10 @@ final class TrackerCategoryStore: NSObject {
             print(error.localizedDescription)
         }
         
-        appDelegate?.saveContext()
+        DataBaseStore.shared.saveContext()
     }
-    public func log() {
-        if let url = appDelegate?.persistentContainer.persistentStoreCoordinator.persistentStores.first?.url {
+    func log() {
+        if let url = DataBaseStore.shared.persistentContainer.persistentStoreCoordinator.persistentStores.first?.url {
             print(url)
         }
     }
