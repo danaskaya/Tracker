@@ -14,11 +14,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         
-        guard let windowScene = (scene as? UIWindowScene) else { return }
+        guard let windowScene = scene as? UIWindowScene else { return }
         let window = UIWindow(windowScene: windowScene)
         window.makeKeyAndVisible()
         let isFirstLaunch = UserDefaults.standard.bool(forKey: "isFirstLaunch")
-        let selectedVC = !isFirstLaunch == false ? TabBarController() : OnboardingViewController()
+        let selectedVC = isFirstLaunch ? OnboardingViewController() : TabBarController()
         window.rootViewController = selectedVC
         self.window = window
     }

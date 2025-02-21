@@ -20,6 +20,7 @@ final class HabitCollectionColorHeaderCell: UICollectionReusableView {
         NSLayoutConstraint.activate([title.topAnchor.constraint(equalTo: topAnchor), title.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 18)])
     }
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        assertionFailure("init(coder:) has not been implemented")
+        return nil
     }
 }

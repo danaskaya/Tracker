@@ -38,7 +38,8 @@ final class IrregularEmojiCollectionCell: UICollectionViewCell {
         ])
     }
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        assertionFailure("init(coder:) has not been implemented")
+        return nil
     }
     func configure(color: UIColor, emoji: String) {
         self.label.text = emoji

@@ -9,7 +9,7 @@ import UIKit
 protocol ScheduleViewControllerDelegate: AnyObject {
     func didSelectScheduleDays(_ days: [WeekDay])
 }
-class ScheduleViewController: UIViewController {
+final class ScheduleViewController: UIViewController {
     weak var delegate: ScheduleViewControllerDelegate?
     private var selectedDays: [WeekDay] = []
     private lazy var scheduleTitle: UILabel = {

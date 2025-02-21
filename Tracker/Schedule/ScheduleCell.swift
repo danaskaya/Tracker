@@ -27,7 +27,8 @@ class ScheduleCell: UITableViewCell {
         ])
     }
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        assertionFailure("init(coder:) has not been implemented")
+        return nil
     }
     func setSwitch(for switchView: UISwitch, at indexPath: IndexPath) {
         switchView.setOn(false, animated: true)

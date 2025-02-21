@@ -196,12 +196,7 @@ final class TrackersViewController: UIViewController {
         }
     }
     private func isDateGreaterThanCurrent(cell: TrackerCell) {
-        let dateisGreater = datePicker.date <= currentDate ? true : false
-        if dateisGreater {
-            cell.plusButton.isEnabled = true
-        } else {
-            cell.plusButton.isEnabled = false
-        }
+        cell.plusButton.isEnabled = datePicker.date <= currentDate
     }
     @objc private func dateChanged(_ sender: UIDatePicker) {
         reloadVisibleCategories()

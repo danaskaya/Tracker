@@ -127,7 +127,8 @@ extension CategoryViewController: UITableViewDataSource {
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell", for: indexPath) as? CategoryCell else {
-            fatalError("Failed to cast cell to CategoryCell")
+            assertionFailure("Failed to cast cell to CategoryCell")
+            return UITableViewCell()
         }
         cell.selectionStyle = .none
         let object = categories[indexPath.row]
