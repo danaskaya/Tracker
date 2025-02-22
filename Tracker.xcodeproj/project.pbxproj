@@ -48,6 +48,7 @@
 		08A23C632D61E83E00DF9F57 /* AddCategoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08A23C622D61E83E00DF9F57 /* AddCategoryViewController.swift */; };
 		08A23C662D6275A900DF9F57 /* OnboardingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08A23C652D6275A900DF9F57 /* OnboardingViewController.swift */; };
 		08B0F0612D68D0FF00CBD20F /* DataBaseStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B0F0602D68D0EC00CBD20F /* DataBaseStore.swift */; };
+		08B0F09B2D69D88200CBD20F /* CategoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B0F09A2D69D87A00CBD20F /* CategoryViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -94,6 +95,7 @@
 		08A23C622D61E83E00DF9F57 /* AddCategoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCategoryViewController.swift; sourceTree = "<group>"; };
 		08A23C652D6275A900DF9F57 /* OnboardingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewController.swift; sourceTree = "<group>"; };
 		08B0F0602D68D0EC00CBD20F /* DataBaseStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataBaseStore.swift; sourceTree = "<group>"; };
+		08B0F09A2D69D87A00CBD20F /* CategoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -209,6 +211,7 @@
 		08A23C2E2D5A976800DF9F57 /* Category */ = {
 			isa = PBXGroup;
 			children = (
+				08B0F09A2D69D87A00CBD20F /* CategoryViewModel.swift */,
 				08A23C2F2D5A978200DF9F57 /* CategoryCell.swift */,
 				08A23C312D5A97F600DF9F57 /* CategoryViewController.swift */,
 				08A23C622D61E83E00DF9F57 /* AddCategoryViewController.swift */,
@@ -342,6 +345,7 @@
 				08A23C3F2D5D33A100DF9F57 /* HabitCollectionEmojiCell.swift in Sources */,
 				08A23C292D5A842E00DF9F57 /* ScheduleCell.swift in Sources */,
 				08A23C182D5A4EDE00DF9F57 /* TabBarController.swift in Sources */,
+				08B0F09B2D69D88200CBD20F /* CategoryViewModel.swift in Sources */,
 				08A23C212D5A5CCD00DF9F57 /* SelectTrackerTypeController.swift in Sources */,
 				08A23C662D6275A900DF9F57 /* OnboardingViewController.swift in Sources */,
 				08B0F0612D68D0FF00CBD20F /* DataBaseStore.swift in Sources */,

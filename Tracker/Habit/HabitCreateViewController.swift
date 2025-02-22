@@ -152,7 +152,7 @@ final class HabitCreateViewController: UIViewController {
         TrackerStore.shared.log()
         createHabitViewControllerDelegate?.createButtonTap(object, category: selectedCategory)
         createHabitViewControllerDelegate?.reloadData()
-        view.window?.rootViewController?.dismiss(animated: true)
+        dismiss()
     }
     @objc private func clearTextFieldButtonTapped() {
         textField.text = ""
@@ -251,6 +251,9 @@ final class HabitCreateViewController: UIViewController {
             buttonsStackView.addArrangedSubview($0)
         }
     }
+    private func dismiss() {
+        view.window?.rootViewController?.dismiss(animated: true)
+    }
 }
 extension HabitCreateViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -300,6 +303,10 @@ extension HabitCreateViewController: ScheduleViewControllerDelegate {
 extension HabitCreateViewController: CategoryViewControllerDelegate {
     func didSelectCategory(category: String) {
         didSelectCategory(category)
+        tableView.reloadData()
+    }
+    func categoryRemoved() {
+        selectedCategory = ""
         tableView.reloadData()
     }
 }

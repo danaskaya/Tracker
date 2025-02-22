@@ -8,12 +8,11 @@
 import UIKit
 protocol CategoryViewControllerDelegate: AnyObject {
     func didSelectCategory(category: String)
+    func categoryRemoved()
 }
 final class CategoryViewController: UIViewController {
+    var categoryViewModel: CategoryViewModel!
     weak var delegate: CategoryViewControllerDelegate?
-    private let addCategoryVC = AddCategoryViewController()
-    var categories: [String] = []
-    private var newCategory = ""
     private lazy var categoryTitle: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -60,12 +59,22 @@ final class CategoryViewController: UIViewController {
     }()
     override func viewDidLoad() {
         super.viewDidLoad()
+        bind()
         setupViews()
         setupConstraints()
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        getCategories()
+        categoryViewModel.getCategories()
+        updateEmptyView()
+    }
+    private func bind() {
+        categoryViewModel = CategoryViewModel()
+        categoryViewModel.changed = { [weak self] in
+            guard let self = self else { return }
+            self.updateEmptyView()
+            self.categoryTableView.reloadData()
+        }
     }
     private func setupViews() {
         view.backgroundColor = .white
@@ -88,7 +97,8 @@ final class CategoryViewController: UIViewController {
         ])
     }
     private func updateEmptyView() {
-        if categories.isEmpty {
+        guard let categoryViewModel = categoryViewModel else { return }
+        if categoryViewModel.categories.isEmpty {
             [emptyView, emptyLabel].forEach {
                 view.addSubview($0)
             }
@@ -107,14 +117,6 @@ final class CategoryViewController: UIViewController {
             emptyLabel.isHidden = true
         }
     }
-    private func getCategories() {
-        let dataObjects = TrackerCategoryStore.shared.fetchCoreDataCategory()
-        let fetchedCats = TrackerCategoryStore.shared.convertToCategory(dataObjects)
-        for cat in fetchedCats {
-            categories.append(cat.title)
-        }
-        updateEmptyView()
-    }
     @objc func addCategoryButtonTapped(_ sender: UIAction) {
         let addCategoryVC = AddCategoryViewController()
         addCategoryVC.delegate = self
@@ -123,7 +125,7 @@ final class CategoryViewController: UIViewController {
 }
 extension CategoryViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return categories.count
+        return categoryViewModel.numberOfRows()
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell", for: indexPath) as? CategoryCell else {
@@ -131,16 +133,15 @@ extension CategoryViewController: UITableViewDataSource {
             return UITableViewCell()
         }
         cell.selectionStyle = .none
-        let object = categories[indexPath.row]
-        cell.set(cell: cell, categories: categories, object: object, indexPath: indexPath)
-        cell.layer.cornerRadius = 16
+        let object = categoryViewModel.categories[indexPath.row]
+        cell.set(cell: cell, categories: categoryViewModel.categories, object: object, indexPath: indexPath)
         return cell
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         75
     }
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        let lastCell = indexPath.row == categories.count - 1
+        let lastCell = indexPath.row == categoryViewModel.categories.count - 1
         if lastCell {
             cell.separatorInset = UIEdgeInsets(top: 0, left: cell.bounds.width, bottom: 0, right: 0)
         } else {
@@ -151,11 +152,10 @@ extension CategoryViewController: UITableViewDataSource {
 extension CategoryViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard let cell = tableView.cellForRow(at: indexPath) as? CategoryCell else { return }
-        if let text = cell.titleLabel.text {
-            delegate?.didSelectCategory(category: text)
-            cell.doneImageView.isHidden = false
-            dismiss(animated: true)
-        }
+        guard let title = cell.titleLabel.text else { return }
+        delegate?.didSelectCategory(category: title)
+        cell.doneImageView.isHidden = false
+        dismiss(animated: true)
     }
     func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
         guard let cell = tableView.cellForRow(at: indexPath) as? CategoryCell else {
@@ -165,12 +165,8 @@ extension CategoryViewController: UITableViewDelegate {
             return UIMenu(children: [
                 UIAction(title: "Удалить", handler: { _ in
                     guard let text = cell.titleLabel.text else { return }
-                    TrackerCategoryStore.shared.deleteCategory(with: text)
-                    self.categories.removeAll { category in
-                        category == text
-                    }
-                    self.updateEmptyView()
-                    tableView.reloadData()
+                    self.categoryViewModel.deleteCategory(with: text)
+                    self.delegate?.categoryRemoved()
                 })
             ])
         })
@@ -186,8 +182,6 @@ extension CategoryViewController: UITableViewDelegate {
 }
 extension CategoryViewController: AddCategoryVCDelegate {
     func categoryAdded(category: String) {
-        categories.append(category)
-        updateEmptyView()
-        categoryTableView.reloadData()
+        categoryViewModel.updateCategory(category: category)
     }
 }

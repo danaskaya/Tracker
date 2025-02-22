@@ -50,6 +50,7 @@ final class CategoryCell: UITableViewCell {
         return nil
     }
     func set(cell: UITableViewCell, categories: [String], object: String, indexPath: IndexPath) {
+        cell.layer.cornerRadius = 16
         contentView.backgroundColor = .clear
         titleLabel.layer.cornerRadius = 0
         titleLabel.textColor = .black
