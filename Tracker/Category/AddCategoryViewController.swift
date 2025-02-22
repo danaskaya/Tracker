@@ -97,7 +97,7 @@ final class AddCategoryViewController: UIViewController {
         let category = TrackerCategory(title: text, trackers: [])
         TrackerCategoryStore.shared.addCategory(category: category)
     }
-    @objc func didChangeTF() {
+    @objc private func didChangeTF() {
         guard let text = textField.text else { return }
         if text.isEmpty {
             doneButton.isEnabled = false
@@ -109,13 +109,13 @@ final class AddCategoryViewController: UIViewController {
             clearTextFieldButton.isHidden = false
         }
     }
-    @objc func doneButtonTapped(_ sender: UIAction) {
+    @objc private func doneButtonTapped(_ sender: UIAction) {
         guard let text = textField.text else { return }
         addCategoryToDB()
         delegate?.categoryAdded(category: text)
         dismiss(animated: true)
     }
-    @objc func clearTextFieldButtonTapped() {
+    @objc private func clearTextFieldButtonTapped() {
         textField.text = ""
         doneButton.isEnabled = false
         doneButton.backgroundColor = #colorLiteral(red: 0.7369984984, green: 0.7409694791, blue: 0.7575188279, alpha: 1)

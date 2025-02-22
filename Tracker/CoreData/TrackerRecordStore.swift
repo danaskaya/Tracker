@@ -18,18 +18,15 @@ final class TrackerRecordStore: NSObject {
         super.init()
     }
     weak var delegate: TrackerRecordStoreDelegate?
-    private var appDelegate: AppDelegate? {
-        return (UIApplication.shared.delegate as? AppDelegate)
-    }
     private var context: NSManagedObjectContext? {
-        return appDelegate?.persistentContainer.viewContext
+        return DataBaseStore.shared.persistentContainer.viewContext
     }
     func addRecord(tracker: TrackerRecord) {
         guard let context = context else { return }
         let newRecord = TrackerRecordCoreData(context: context)
         newRecord.id = tracker.id
         newRecord.date = tracker.date
-        appDelegate?.saveContext()
+        DataBaseStore.shared.saveContext()
     }
     func deleteRecord(id: UUID) {
         let request = NSFetchRequest<TrackerRecordCoreData>(entityName: "TrackerRecordCoreData")
@@ -38,7 +35,7 @@ final class TrackerRecordStore: NSObject {
             let objects = try context?.fetch(request)
             if let deletedObject = objects?.first {
                 context?.delete(deletedObject)
-                appDelegate?.saveContext()
+                DataBaseStore.shared.saveContext()
             }
         } catch let error as NSError {
             print(error.localizedDescription)
