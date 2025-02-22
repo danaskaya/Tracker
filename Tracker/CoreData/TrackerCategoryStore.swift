@@ -20,7 +20,7 @@ final class TrackerCategoryStore: NSObject {
     weak var delegate: TrackerCategoryStoreDelegate?
     private let colorHex = UIColorHex()
     private var context: NSManagedObjectContext? {
-        return DataBaseStore.shared.persistentContainer.viewContext
+        DataBaseStore.shared.persistentContainer.viewContext
     }
     func fetchCategories() -> [TrackerCategory] {
         return convertToCategory(fetchCoreDataCategory())

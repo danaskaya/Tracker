@@ -7,7 +7,7 @@
 
 import CoreData
 
-class DataBaseStore {
+final class DataBaseStore {
     static let shared = DataBaseStore()
     
     lazy var persistentContainer: NSPersistentContainer = {
