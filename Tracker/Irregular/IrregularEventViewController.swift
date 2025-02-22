@@ -295,9 +295,7 @@ extension IrregularEventViewController: UITableViewDataSource {
             assertionFailure("Failed to cast cell to IrregulatTableCell")
             return UITableViewCell()
         }
-        cell.selectionStyle = .none
-        cell.titleLabel.text = "Категория"
-        cell.descriptionLabel.text = selectedCategory
+        cell.set(selectedCategory: selectedCategory, indexPath: indexPath)
         return cell
     }
 }
@@ -445,6 +443,11 @@ extension IrregularEventViewController: UIGestureRecognizerDelegate {
     }
 }
 extension IrregularEventViewController: CategoryViewControllerDelegate {
+    func categoryRemoved() {
+        selectedCategory = String()
+        didSelectCategory(selectedCategory)
+        tableView.reloadData()
+    }
     func didSelectCategory(category: String) {
         didSelectCategory(category)
         tableView.reloadData()

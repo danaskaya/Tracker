@@ -80,9 +80,6 @@ final class OnboardingViewController: UIPageViewController {
         if let first = pages.first {
             setViewControllers([first], direction: .forward, animated: true, completion: nil)
         }
-        if !isFirstLaunch {
-            UserDefaults.standard.setValue(true, forKey: "isFirstLaunch")
-        }
         setupViews()
         setupConstraints()
     }

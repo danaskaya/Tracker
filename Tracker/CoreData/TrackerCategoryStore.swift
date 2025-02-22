@@ -22,6 +22,9 @@ final class TrackerCategoryStore: NSObject {
     private var context: NSManagedObjectContext? {
         return DataBaseStore.shared.persistentContainer.viewContext
     }
+    func fetchCategories() -> [TrackerCategory] {
+        return convertToCategory(fetchCoreDataCategory())
+    }
     func fetchCoreDataCategory() -> [TrackerCategoryCoreData] {
         var categories: [TrackerCategoryCoreData] = []
         guard let context = context else { return categories }
