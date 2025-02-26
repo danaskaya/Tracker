@@ -10,16 +10,21 @@ import UIKit
 protocol TrackerCellDelegate: AnyObject {
     func completeTracker(id: UUID, indexPath: IndexPath)
     func uncompleteTracker(id: UUID, indexPath: IndexPath)
+    func trackerWasDeleted(name: String, id: UUID)
+    func editTracker(with id: UUID, completedDays: Int)
+    func pinTracker(with tracker: Tracker)
 }
 
 final class TrackerCell: UICollectionViewCell {
     
+    private let analiticService = AnaliticService()
     private var isComplete: Bool = false
     private var trackerID: UUID?
     private var indexPath: IndexPath?
+    private var completedDays: Int?
     weak var delegate: TrackerCellDelegate?
     private var emoji = UILabel()
-    private let label: UILabel = {
+    let label: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .systemFont(ofSize: 12, weight: .medium)
@@ -32,7 +37,7 @@ final class TrackerCell: UICollectionViewCell {
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
-    private let trackerView : UIView = {
+    let trackerView : UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.backgroundColor = .white
@@ -62,16 +67,22 @@ final class TrackerCell: UICollectionViewCell {
             delegate?.uncompleteTracker(id: trackerID, indexPath: indexPath)
         } else {
             delegate?.completeTracker(id: trackerID, indexPath: indexPath)
+            AnaliticService.report(event: "track", params: ["screen" : "Main", "item" : "track"])
         }
     }
     override init(frame: CGRect) {
         super.init(frame: frame)
+        setInteraction()
         setupViews()
         setupConstraints()
     }
     required init?(coder: NSCoder) {
         assertionFailure("init(coder:) has not been implemented")
         return nil
+    }
+    private func setInteraction() {
+        let interaction = UIContextMenuInteraction(delegate: self)
+        trackerView.addInteraction(interaction)
     }
     private func setupViews() {
         [countLabel, trackerView, plusButton].forEach {
@@ -121,6 +132,7 @@ final class TrackerCell: UICollectionViewCell {
         self.indexPath = indexPath
         self.isComplete = isComplete
         self.trackerID = object.id
+        self.completedDays = completedDays
         self.trackerView.backgroundColor = object.color
         if !isComplete {
             self.plusButton.backgroundColor = object.color
@@ -130,8 +142,8 @@ final class TrackerCell: UICollectionViewCell {
             self.plusButton.setImage(UIImage(systemName: "checkmark"), for: .normal)
         }
         self.trackerView.layer.cornerRadius = 16
-        let wordDay = convertCompletedDays(completedDays)
-        countLabel.text = "\(wordDay)"
+        let selectedWordDay = getCompletedCount(count: completedDays)
+        countLabel.text = "\(selectedWordDay)"
         self.label.attributedText = NSMutableAttributedString(string: object.name, attributes: [NSAttributedString.Key.paragraphStyle : paragraphStyle])
         self.label.textColor  = .white
         self.emojiView.backgroundColor = UIColor(red: 1, green: 1, blue: 1, alpha: 0.7)
@@ -141,19 +153,37 @@ final class TrackerCell: UICollectionViewCell {
         self.emoji.font = .systemFont(ofSize: 12)
         self.layer.cornerRadius = 16
     }
-    private func convertCompletedDays(_ completedDays: Int) -> String {
-        let number = completedDays % 10
-        let lastTwoNumbers = completedDays % 100
-        if lastTwoNumbers >= 11 && lastTwoNumbers <= 19 {
-            return "\(completedDays) дней"
+    func getCompletedCount(count: Int) -> String {
+        let formatString: String = NSLocalizedString("completedDaysCount", comment: "")
+        let resultString: String = String.localizedStringWithFormat(formatString, count)
+        return resultString
+    }
+    func deleteTracker(with name: String) {
+        TrackerStore.shared.deleteTracker(with: name)
+    }
+}
+extension TrackerCell: UIContextMenuInteractionDelegate {
+    func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
+        let configuration = UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
+            let tracker = TrackerStore.shared.convertToTracker(coreDataTracker: TrackerStore.shared.fetchTracker(with: self.trackerID ?? UUID()))
+            let title = tracker.isPinned ? NSLocalizedString("Unpin", comment: "") : NSLocalizedString("Pin", comment: "")
+            let pinAction = UIAction(title: title) { action in
+                self.delegate?.pinTracker(with: tracker)
+            }
+            let editAction = UIAction(title: NSLocalizedString("Edit Title", comment: "")) { action in
+                AnaliticService.report(event: "click", params: ["screen" : "Main", "item" : "edit"])
+                guard let trackerID = self.trackerID,
+                      let completedDays = self.completedDays else { return }
+                self.delegate?.editTracker(with: trackerID, completedDays: completedDays)
+            }
+            let deleteAction = UIAction(title: NSLocalizedString("Delete", comment: ""), attributes: .destructive) { _ in
+                AnaliticService.report(event: "click", params: ["screen" : "Main", "item" : "edit"])
+                guard let name = self.label.text,
+                      let trackerID = self.trackerID else { return }
+                self.delegate?.trackerWasDeleted(name: name, id: trackerID)
+            }
+            return UIMenu(title: "", children: [pinAction, editAction, deleteAction])
         }
-        switch number {
-        case 1:
-            return "\(completedDays) день"
-        case 2, 3, 4:
-            return "\(completedDays) дня"
-        default:
-            return "\(completedDays) дней"
-        }
+        return configuration
     }
 }

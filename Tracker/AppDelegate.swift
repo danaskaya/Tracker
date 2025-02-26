@@ -6,11 +6,16 @@
 //
 
 import UIKit
+import YandexMobileMetrica
 
 @main
 final class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        guard let configuration = YMMYandexMetricaConfiguration(apiKey: "3ad628e5-fb95-4a99-b8f3-743b31682a4b") else {
+            return true
+        }
+        YMMYandexMetrica.activate(with: configuration)
         window = UIWindow()
         window?.rootViewController = TabBarController()
         window?.makeKeyAndVisible()
@@ -29,6 +34,9 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         // Called when the user discards a scene session.
         // If any sessions were discarded while the application was not running, this will be called shortly after application:didFinishLaunchingWithOptions.
         // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
+    }
+    func applicationWillTerminate(_ application: UIApplication) {
+        UserDefaults.standard.removeObject(forKey: "trackers")
     }
 }
 

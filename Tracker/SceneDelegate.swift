@@ -22,6 +22,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
         let selectedVC = isFirstLaunch ? TabBarController() : OnboardingViewController()
         window.rootViewController = selectedVC
+        print(selectedVC)
         window.makeKeyAndVisible()
         self.window = window
     }
