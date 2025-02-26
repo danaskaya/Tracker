@@ -48,7 +48,7 @@ final class HabitTableCell: UITableViewCell {
     }
     override func layoutSubviews() {
         super.layoutSubviews()
-        if descriptionLabel.text?.isEmpty ?? true {
+        if descriptionLabel.text?.isEmpty ?? true || descriptionLabel.text == "" {
             titleLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
             descriptionLabel.isHidden = true
         } else {

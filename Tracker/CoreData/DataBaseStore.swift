@@ -7,7 +7,7 @@
 
 import CoreData
 
-class DataBaseStore {
+final class DataBaseStore {
     static let shared = DataBaseStore()
     
     lazy var persistentContainer: NSPersistentContainer = {
@@ -28,7 +28,7 @@ class DataBaseStore {
                 try context.save()
             } catch {
                 let nserror = error as NSError
-                fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
+                assertionFailure("Unresolved error \(nserror), \(nserror.userInfo)")
             }
         }
     }
