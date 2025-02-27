@@ -17,7 +17,7 @@ final class OnboardingViewController: UIPageViewController {
     private lazy var button: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("Вот это технологии!", for: .normal)
+        button.setTitle(NSLocalizedString("onboardingButton", comment: ""), for: .normal)
         button.backgroundColor = .black
         button.setTitleColor(.white, for: .normal)
         button.layer.cornerRadius = 16
@@ -47,7 +47,7 @@ final class OnboardingViewController: UIPageViewController {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .systemFont(ofSize: 32, weight: .bold)
-        label.text = "Отслеживайте только \nто, что хотите"
+        label.text = NSLocalizedString("firstOnboardingView", comment: "")
         label.numberOfLines = 2
         label.lineBreakMode = .byWordWrapping
         label.textAlignment = .center
@@ -57,7 +57,7 @@ final class OnboardingViewController: UIPageViewController {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .systemFont(ofSize: 32, weight: .bold)
-        label.text = "Даже если это \nне литры воды и йога"
+        label.text = NSLocalizedString("secondOnboardingView", comment: "")
         label.numberOfLines = 2
         label.lineBreakMode = .byWordWrapping
         label.textAlignment = .center

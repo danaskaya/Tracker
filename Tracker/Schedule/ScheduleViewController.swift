@@ -15,7 +15,7 @@ final class ScheduleViewController: UIViewController {
     private lazy var scheduleTitle: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Расписание"
+        label.text = NSLocalizedString("scheduleTitle", comment: "")
         label.font = .systemFont(ofSize: 16, weight: .medium)
         return label
     }()
@@ -35,10 +35,10 @@ final class ScheduleViewController: UIViewController {
     private lazy var doneButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("Готово", for: .normal)
-        button.setTitleColor(.white, for: .normal)
+        button.setTitle(NSLocalizedString("done", comment: ""), for: .normal)
+        button.setTitleColor(Colors.shared.buttonTextColor, for: .normal)
         button.addTarget(self, action: #selector(doneButtonTapped(_ :)), for: .touchUpInside)
-        button.backgroundColor = .black
+        button.backgroundColor = Colors.shared.buttonsBackground
         button.layer.cornerRadius = 16
         return button
     }()
@@ -48,7 +48,7 @@ final class ScheduleViewController: UIViewController {
         setupConstraints()
     }
     private func setupViews() {
-        view.backgroundColor = .white
+        view.backgroundColor = .systemBackground
         view.addSubview(scheduleTitle)
         view.addSubview(scheduleTableView)
         view.addSubview(doneButton)
@@ -67,6 +67,10 @@ final class ScheduleViewController: UIViewController {
             doneButton.heightAnchor.constraint(equalToConstant: 60)
         ])
     }
+    func getWeekDay(day: String) -> String {
+        let formatString: String = NSLocalizedString(day, comment: "")
+        return formatString
+    }
     @objc func doneButtonTapped(_ sender: UIAction) {
         delegate?.didSelectScheduleDays(selectedDays)
         dismiss(animated: true)
@@ -82,11 +86,11 @@ extension ScheduleViewController: UITableViewDataSource {
         }
         cell.selectionStyle = .none
         let switchView = UISwitch()
-        let weekDay = WeekDay.allCases[indexPath.row]
-        cell.cellDaysLabel.text = weekDay.rawValue
+        let weekDay = WeekDay.allCases[indexPath.row].rawValue
+        cell.cellDaysLabel.text = getWeekDay(day: weekDay)
         cell.setSwitch(for: switchView, at: indexPath)
         cell.delegate = self
-        cell.backgroundColor = #colorLiteral(red: 0.9019607843, green: 0.9098039216, blue: 0.9215686275, alpha: 0.7017367534)
+        cell.backgroundColor = Colors.shared.dark
         return cell
     }
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
@@ -111,35 +115,6 @@ extension ScheduleViewController: ScheduleCellDelegate {
             selectedDays.append(day)
         } else {
             selectedDays.removeAll(where: {$0 == day})
-        }
-    }
-}
-enum WeekDay: String, CaseIterable {
-    case monday = "Понедельник"
-    case tuesday = "Вторник"
-    case wednesday = "Среда"
-    case thursday = "Четверг"
-    case friday = "Пятница"
-    case saturday = "Суббота"
-    case sunday = "Воскресенье"
-    
-    var shortTitle: String {
-        switch self {
-            
-        case .monday:
-            return "Пн"
-        case .tuesday:
-            return "Вт"
-        case .wednesday:
-            return "Ср"
-        case .thursday:
-            return "Чт"
-        case .friday:
-            return "Пт"
-        case .saturday:
-            return "Сб"
-        case .sunday:
-            return "Вс"
         }
     }
 }

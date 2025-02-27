@@ -19,10 +19,6 @@ final class TrackerStore: NSObject {
     private lazy var fetchedResultsController: NSFetchedResultsController<TrackerCoreData> = {
         let fetchRequest: NSFetchRequest<TrackerCoreData> = TrackerCoreData.fetchRequest()
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
-        guard let context = context else {
-            assertionFailure("Failed to get context")
-            return NSFetchedResultsController<TrackerCoreData>()
-        }
         let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: context, sectionNameKeyPath: nil, cacheName: nil)
         fetchedResultsController.delegate = self
         do {
@@ -32,7 +28,7 @@ final class TrackerStore: NSObject {
         }
         return fetchedResultsController
     }()
-    private var context: NSManagedObjectContext? {
+    private var context: NSManagedObjectContext {
         return DataBaseStore.shared.persistentContainer.viewContext
     }
     func convertToTracker(coreDataTracker: TrackerCoreData) -> Tracker {
@@ -43,17 +39,17 @@ final class TrackerStore: NSObject {
               let schedule = coreDataTracker.schedule
         else {
             assertionFailure("Failed convert to Tracker")
-            return Tracker(id: UUID(), name: "", color: UIColor(), emoji: "", schedule: [])
+            return Tracker(id: UUID(), name: "", color: UIColor(), emoji: "", schedule: [], isPinned: false)
         }
+        let isPinned = coreDataTracker.isPinned
         let newColor = UIColorHex.color(from: color) ?? UIColor()
         let scheduleString = schedule.compactMap {
             WeekDay(rawValue: $0)
         }
-        let tracker = Tracker(id: id, name: name, color: newColor, emoji: emoji, schedule: scheduleString)
+        let tracker = Tracker(id: id, name: name, color: newColor, emoji: emoji, schedule: scheduleString, isPinned: isPinned)
         return tracker
     }
     func addTracker(tracker: Tracker, category: TrackerCategory) {
-        guard let context = context else { return }
         let newTracker = TrackerCoreData(context: context)
         newTracker.id = tracker.id
         newTracker.name = tracker.name
@@ -62,33 +58,63 @@ final class TrackerStore: NSObject {
         newTracker.schedule = tracker.schedule.compactMap {
             $0.rawValue
         }
+        newTracker.isPinned = tracker.isPinned
         let fetchedCategory = TrackerCategoryStore.shared.fetchCategoryWithTitle(title: category.title)
         newTracker.category = fetchedCategory
         DataBaseStore.shared.saveContext()
     }
+    func editTracker(name: String, tracker: Tracker, category: TrackerCategory) {
+        let editedTracker = fetchTracker(name: name)
+        editedTracker.id = tracker.id
+        editedTracker.name = tracker.name
+        editedTracker.emoji = tracker.emoji
+        editedTracker.color = UIColorHex.hexString(from: tracker.color)
+        editedTracker.schedule = tracker.schedule.compactMap {
+            $0.rawValue
+        }
+        editedTracker.isPinned = tracker.isPinned
+        let fetchedCategory = TrackerCategoryStore.shared.fetchCategoryWithTitle(title: category.title)
+        editedTracker.category = fetchedCategory
+        DataBaseStore.shared.saveContext()
+    }
+    func pinTracker(id: UUID) {
+        let tracker = fetchTracker(with: id)
+            tracker.isPinned = !tracker.isPinned
+            DataBaseStore.shared.saveContext()
+    }
     func deleteTracker(with name: String) {
-        guard let context = context else { return }
         let request = NSFetchRequest<TrackerCoreData>(entityName: "TrackerCoreData")
         request.predicate = NSPredicate(format: "name == %@", name)
         do {
             let objects = try context.fetch(request)
-            if let objectToDelete = objects.first {
-                context.delete(objectToDelete)
-            }
+            context.delete(objects[0])
         } catch let error as NSError {
             print(error.localizedDescription)
         }
         DataBaseStore.shared.saveContext()
     }
-    func fetchTrackers() {
+    func fetchTracker(with id: UUID) -> TrackerCoreData {
+        let request = NSFetchRequest<TrackerCoreData>(entityName: "TrackerCoreData")
+        let uuid = id.uuidString
+        request.predicate = NSPredicate(format: "id == %@", uuid)
+        var object: [TrackerCoreData] = []
         do {
-            try fetchedResultsController.performFetch()
-            fetchedResultsController.fetchedObjects?.forEach { tracker in
-                let object = convertToTracker(coreDataTracker: tracker)
-            }
-        } catch {
-            print("Error fetching results: \(error)")
+            object = try context.fetch(request)
+        } catch let error as NSError {
+            print(error.localizedDescription)
         }
+        return object[0]
+    }
+    func fetchTracker(name: String) -> TrackerCoreData {
+        let request = NSFetchRequest<TrackerCoreData>(entityName: "TrackerCoreData")
+        request.predicate = NSPredicate(format: "name == %@", name)
+        var object: [TrackerCoreData] = []
+        do {
+            object = try context.fetch(request)
+        } catch let error as NSError {
+            print(error.localizedDescription)
+        }
+        return object[0]
     }
     func log() {
         if let url = DataBaseStore.shared.persistentContainer.persistentStoreCoordinator.persistentStores.first?.url {

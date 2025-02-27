@@ -16,7 +16,7 @@ final class CategoryViewController: UIViewController {
     private lazy var categoryTitle: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Категории"
+        label.text = NSLocalizedString("categoryTitle", comment: "")
         label.font = .systemFont(ofSize: 16, weight: .medium)
         return label
     }()
@@ -36,10 +36,11 @@ final class CategoryViewController: UIViewController {
     private lazy var addCategoryButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("Добавить категорию", for: .normal)
-        button.setTitleColor(.white, for: .normal)
+        let title = NSLocalizedString("categoryCreateButton", comment: "")
+        button.setTitle(title, for: .normal)
+        button.setTitleColor(Colors.shared.buttonTextColor, for: .normal)
         button.addTarget(self, action: #selector(addCategoryButtonTapped(_ :)), for: .touchUpInside)
-        button.backgroundColor = .black
+        button.backgroundColor = Colors.shared.buttonsBackground
         button.layer.cornerRadius = 16
         return button
     }()
@@ -77,7 +78,7 @@ final class CategoryViewController: UIViewController {
         }
     }
     private func setupViews() {
-        view.backgroundColor = .white
+        view.backgroundColor = .systemBackground
         view.addSubview(categoryTitle)
         view.addSubview(categoryTableView)
         view.addSubview(addCategoryButton)
@@ -111,7 +112,7 @@ final class CategoryViewController: UIViewController {
             emptyView.isHidden = false
             emptyLabel.isHidden = false
             emptyView.image = UIImage(named: "1")
-            emptyLabel.text = "Привычки и события можно \nобъединить по смыслу"
+            emptyLabel.text = NSLocalizedString("categoriesEmptyLabel", comment: "")
         } else {
             emptyView.isHidden = true
             emptyLabel.isHidden = true
