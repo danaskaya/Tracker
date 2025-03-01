@@ -14,10 +14,10 @@ final class Colors {
         if traits.userInterfaceStyle == .light {
             return UIColor.black
         } else {
-            return UIColor(red: 255, green: 255, blue: 255, alpha: 1)
+            return UIColor(red: 1, green: 1, blue: 1, alpha: 1)
         }
     }
-    let datePickerBackground = UIColor(red: 240, green: 240, blue: 240, alpha: 1)
+    let datePickerBackground = UIColor(red: 240/255, green: 240/255, blue: 240/255, alpha: 1)
     
     let tabBarBorder = UIColor { traitColletion in
         switch traitColletion.userInterfaceStyle {
