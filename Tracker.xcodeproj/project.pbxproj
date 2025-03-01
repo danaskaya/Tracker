@@ -155,7 +155,6 @@
 		08A23BE92D5A364800DF9F57 = {
 			isa = PBXGroup;
 			children = (
-				08A23C032D5A364A00DF9F57 /* Info.plist */,
 				08A23BFE2D5A364A00DF9F57 /* Assets.xcassets */,
 				08A23C002D5A364A00DF9F57 /* LaunchScreen.storyboard */,
 				08A23BF42D5A364800DF9F57 /* Tracker */,
@@ -178,6 +177,7 @@
 		08A23BF42D5A364800DF9F57 /* Tracker */ = {
 			isa = PBXGroup;
 			children = (
+				08A23C032D5A364A00DF9F57 /* Info.plist */,
 				08B0F0AC2D6E29CC00CBD20F /* Filters */,
 				08A23BF52D5A364800DF9F57 /* AppDelegate.swift */,
 				08A23BF72D5A364800DF9F57 /* SceneDelegate.swift */,
@@ -739,7 +739,7 @@
 				DEVELOPMENT_TEAM = 4B586V2NTL;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = /Users/diliara/projects/yandex/Tracker/Tracker/Info.plist;
+				INFOPLIST_FILE = Tracker/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -773,7 +773,7 @@
 				DEVELOPMENT_TEAM = 4B586V2NTL;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = /Users/diliara/projects/yandex/Tracker/Tracker/Info.plist;
+				INFOPLIST_FILE = Tracker/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
