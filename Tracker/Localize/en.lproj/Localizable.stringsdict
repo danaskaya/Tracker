@@ -27,11 +27,11 @@
 		<key>count</key>
 		<dict>
 			<key>other</key>
-			<string>Days</string>
+			<string>Trackers completed</string>
 			<key>one</key>
-			<string>Day</string>
+			<string>Tracker completed</string>
 			<key>zero</key>
-			<string>Days</string>
+			<string>Trackers completed</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>NSStringFormatSpecTypeKey</key>
