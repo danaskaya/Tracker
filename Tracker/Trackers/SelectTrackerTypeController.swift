@@ -7,15 +7,14 @@
 
 import UIKit
 final class SelectTrackerTypeController: UIViewController {
-    weak var habitCreateViewControllerDelegate: HabitCreateViewControllerDelegate?
-    weak var irregularViewControllerDelegate: IrregularEventViewControllerDelegate?
+    weak var habitCreateViewControllerDelegate: TrackerCreateViewControllerDelegate?
     override func viewDidLoad() {
         super.viewDidLoad()
         setupViews()
     }
     private let titleLabel: UILabel = {
         let title = UILabel()
-        title.text = "Создание трекера"
+        title.text = NSLocalizedString("selectHabitTitle", comment: "")
         title.font = .systemFont(ofSize: 16, weight: .medium)
         title.translatesAutoresizingMaskIntoConstraints = false
         return title
@@ -25,9 +24,10 @@ final class SelectTrackerTypeController: UIViewController {
         button.addTarget(self, action: #selector(habitButtonTapped), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.layer.cornerRadius = 16
-        button.setTitle("Привычка", for: .normal)
+        button.setTitle(NSLocalizedString("selectHabitTitle", comment: ""), for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
-        button.backgroundColor = .black
+        button.backgroundColor = Colors.shared.buttonsBackground
+        button.setTitleColor(Colors.shared.buttonTextColor, for: .normal)
         return button
     }()
     private lazy var irregularEventButton: UIButton = {
@@ -35,9 +35,10 @@ final class SelectTrackerTypeController: UIViewController {
         button.addTarget(self, action: #selector(irregularEventButtonTapped), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.layer.cornerRadius = 16
-        button.setTitle("Нерегулярное событие", for: .normal)
+        button.setTitle(NSLocalizedString("selectIrregularEventTitle", comment: ""), for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
-        button.backgroundColor = .black
+        button.backgroundColor = Colors.shared.buttonsBackground
+        button.setTitleColor(Colors.shared.buttonTextColor, for: .normal)
         return button
     }()
     private var buttonsStackView: UIStackView = {
@@ -50,17 +51,18 @@ final class SelectTrackerTypeController: UIViewController {
         return stackView
     }()
     @objc func habitButtonTapped() {
-        let vc = HabitCreateViewController()
+        let vc = TrackerCreateViewController()
         vc.createHabitViewControllerDelegate = habitCreateViewControllerDelegate
+        vc.isHabit = true
         present(vc, animated: true)
     }
     @objc func irregularEventButtonTapped() {
-        let vc = IrregularEventViewController()
-        vc.irregularEventViewControllerDelegate = irregularViewControllerDelegate
+        let vc = TrackerCreateViewController()
+        vc.createHabitViewControllerDelegate = habitCreateViewControllerDelegate
         present(vc, animated: true)
     }
     func setupViews() {
-        view.backgroundColor = .white
+        view.backgroundColor = .systemBackground
         view.addSubview(buttonsStackView)
         view.addSubview(titleLabel)
         buttonsStackView.addArrangedSubview(habitButton)
