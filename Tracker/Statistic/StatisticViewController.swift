@@ -125,9 +125,11 @@ final class StatisticViewController: UIViewController {
             countLabel.topAnchor.constraint(equalTo: completTrackersView.topAnchor, constant: 12),
             countLabel.leadingAnchor.constraint(equalTo: completTrackersView.leadingAnchor, constant: 12),
             countLabel.trailingAnchor.constraint(equalTo: completTrackersView.trailingAnchor, constant: -12),
-            descriptionLabel.topAnchor.constraint(equalTo: completTrackersView.topAnchor, constant: 60),
+            countLabel.heightAnchor.constraint(equalToConstant: 41),
+            descriptionLabel.topAnchor.constraint(equalTo: countLabel.bottomAnchor, constant: 7),
             descriptionLabel.leadingAnchor.constraint(equalTo: completTrackersView.leadingAnchor, constant: 12),
             descriptionLabel.trailingAnchor.constraint(equalTo: completTrackersView.trailingAnchor, constant: -12),
+            descriptionLabel.heightAnchor.constraint(equalToConstant: 18)
         ])
     }
 }

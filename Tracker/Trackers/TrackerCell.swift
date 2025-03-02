@@ -177,7 +177,7 @@ extension TrackerCell: UIContextMenuInteractionDelegate {
                 self.delegate?.editTracker(with: trackerID, completedDays: completedDays)
             }
             let deleteAction = UIAction(title: NSLocalizedString("Delete", comment: ""), attributes: .destructive) { _ in
-                AnaliticService.report(event: "click", params: ["screen" : "Main", "item" : "edit"])
+                AnaliticService.report(event: "click", params: ["screen" : "Main", "item" : "delete"])
                 guard let name = self.label.text,
                       let trackerID = self.trackerID else { return }
                 self.delegate?.trackerWasDeleted(name: name, id: trackerID)
