@@ -68,12 +68,14 @@ final class TrackerCategoryStore: NSObject {
                 let newSchedule = trackerSchedule.compactMap {
                     WeekDay(rawValue: $0)
                 }
+                let isPinned = tracker.isPinned
                 let newTracker = Tracker(
                     id: trackerID,
                     name: trackerName,
                     color: UIColorHex.color(from: trackerColor) ?? UIColor(),
                     emoji: trackerEmoji,
-                    schedule: newSchedule)
+                    schedule: newSchedule,
+                    isPinned: isPinned)
                 trackers.append(newTracker)
             }
             let category = TrackerCategory(title: title, trackers: trackers)
@@ -109,10 +111,5 @@ final class TrackerCategoryStore: NSObject {
         }
         
         DataBaseStore.shared.saveContext()
-    }
-    func log() {
-        if let url = DataBaseStore.shared.persistentContainer.persistentStoreCoordinator.persistentStores.first?.url {
-            print(url)
-        }
     }
 }

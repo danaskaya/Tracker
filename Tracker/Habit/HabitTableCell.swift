@@ -33,7 +33,7 @@ final class HabitTableCell: UITableViewCell {
         [titleLabel, descriptionLabel, detailButton].forEach {
             contentView.addSubview($0)
         }
-        contentView.backgroundColor = #colorLiteral(red: 0.9019607843, green: 0.9098039216, blue: 0.9215686275, alpha: 0.7017367534)
+        contentView.backgroundColor = Colors.shared.dark
         NSLayoutConstraint.activate([
             detailButton.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             detailButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
